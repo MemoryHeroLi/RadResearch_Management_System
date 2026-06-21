@@ -1,51 +1,55 @@
 {% extends "base.html" %}
 {% block title %}团队管理{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>团队成员</h2>
+<div class="page-header-row">
+    <div>
+        <h1>团队成员</h1>
+        <p>管理研究团队人员与能力评估</p>
+    </div>
     <a href="{{ url_for('team.new_member') }}" class="btn btn-primary">+ 添加成员</a>
 </div>
-<form method="get" class="row g-2 mb-3">
-    <div class="col-auto">
-        <select name="group" class="form-select form-select-sm">
-            <option value="">全部组</option>
-            {% for g in groups %}<option value="{{ g }}" {% if filters.group == g %}selected{% endif %}>{{ g }}</option>{% endfor %}
-        </select>
-    </div>
-    <div class="col-auto">
-        <select name="level" class="form-select form-select-sm">
-            <option value="">全部评级</option>
-            {% for l in levels %}<option value="{{ l }}" {% if filters.level == l %}selected{% endif %}>{{ l }}级</option>{% endfor %}
-        </select>
-    </div>
-    <div class="col-auto"><button class="btn btn-outline-primary btn-sm">筛选</button></div>
+
+<form method="get" class="filter-bar">
+    <select name="group" class="form-select">
+        <option value="">全部组</option>
+        {% for g in groups %}<option value="{{ g }}" {% if filters.group == g %}selected{% endif %}>{{ g }}</option>{% endfor %}
+    </select>
+    <select name="level" class="form-select">
+        <option value="">全部评级</option>
+        {% for l in levels %}<option value="{{ l }}" {% if filters.level == l %}selected{% endif %}>{{ l }}级</option>{% endfor %}
+    </select>
+    <button class="btn btn-outline btn-sm">筛选</button>
 </form>
-<div class="row g-3">
+
+{% if members %}
+<div class="member-grid">
     {% for m in members %}
-    <div class="col-md-6 col-lg-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h6 class="card-title mb-0">{{ m.name }}</h6>
-                        <div class="text-muted small">{{ m.group or '-' }} · {{ m.title or '-' }}</div>
-                    </div>
-                    <span class="badge bg-{{ 'success' if m.level == 'A' else 'warning' if m.level == 'B' else 'secondary' }}">{{ m.level }}级</span>
-                </div>
-                {% if m.skills %}
-                <div class="mt-2">
-                    {% for sk in m.skills.split(',') %}
-                    <span class="badge bg-info text-dark">{{ sk.strip() }}</span>
-                    {% endfor %}
-                </div>
-                {% endif %}
-                {% if m.responsible_for %}<div class="small text-muted mt-2">负责: {{ m.responsible_for }}</div>{% endif %}
-                <a href="{{ url_for('team.view_member', id=m.id) }}" class="btn btn-sm btn-outline-primary mt-2">查看雷达图</a>
-            </div>
+    <div class="member-card">
+        <div class="member-header">
+            <div class="member-avatar" style="background:{{ ['#0891B2','#7C3AED','#059669','#D97706','#0284C7','#DC2626','#475569','#BE185D'][loop.index0 % 8] }};">{{ m.name[0] }}</div>
+            <div class="member-name">{{ m.name }}</div>
+            <span class="member-level {{ m.level | lower if m.level else 'b' }}">{{ m.level }}级</span>
         </div>
+        <div class="text-sm text-muted mb-2">{{ m.group or '-' }} · {{ m.title or '-' }}</div>
+        {% if m.skills %}
+        <div class="member-tags">
+            {% for sk in m.skills.split(',') %}
+            <span class="badge badge-info">{{ sk.strip() }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if m.responsible_for %}
+        <div class="member-footer">负责: {{ m.responsible_for }}</div>
+        {% endif %}
+        <a href="{{ url_for('team.view_member', id=m.id) }}" class="btn btn-outline btn-sm mt-3" style="width:100%;">查看雷达图 →</a>
     </div>
-    {% else %}
-    <div class="col-12 text-center text-muted py-4">暂无成员</div>
     {% endfor %}
 </div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">👥</div>
+    <div class="empty-text">暂无成员</div>
+    <div class="empty-action"><a href="{{ url_for('team.new_member') }}" class="btn btn-primary">添加第一位成员</a></div>
+</div>
+{% endif %}
 {% endblock %}

@@ -1,32 +1,56 @@
 {% extends "base.html" %}
 {% block title %}{{ '编辑' if member else '添加' }}成员{% endblock %}
 {% block content %}
-<h2 class="mb-4">{{ '编辑' if member else '添加' }}成员</h2>
+<div class="page-header">
+    <h1>{{ '编辑' if member else '添加' }}成员</h1>
+    <p>填写成员基本信息</p>
+</div>
+
 <form method="post">
-    <div class="mb-3">
-        <label class="form-label">姓名 *</label>
-        <input type="text" name="name" class="form-control" required value="{{ member.name if member else '' }}">
+    <div class="form-group">
+        <label class="form-label">姓名 <span class="required">*</span></label>
+        <input type="text" name="name" class="form-input" required value="{{ member.name if member else '' }}">
     </div>
-    <div class="row mb-3">
-        <div class="col">
+
+    <div class="form-row">
+        <div class="form-group">
             <label class="form-label">所属组</label>
             <select name="group" class="form-select">
                 <option value="">-</option>
                 {% for g in groups %}<option value="{{ g }}" {% if member and member.group == g %}selected{% endif %}>{{ g }}</option>{% endfor %}
             </select>
         </div>
-        <div class="col">
+        <div class="form-group">
             <label class="form-label">评级</label>
             <select name="level" class="form-select">
                 {% for l in levels %}<option value="{{ l }}" {% if member and member.level == l %}selected{% endif %}>{{ l }}级</option>{% endfor %}
             </select>
         </div>
     </div>
-    <div class="mb-3"><label class="form-label">职位</label><input type="text" name="title" class="form-control" value="{{ member.title if member else '' }}"></div>
-    <div class="mb-3"><label class="form-label">技能标签（逗号分隔）</label><input type="text" name="skills" class="form-control" value="{{ member.skills if member else '' }}"></div>
-    <div class="mb-3"><label class="form-label">负责的技术点</label><input type="text" name="responsible_for" class="form-control" value="{{ member.responsible_for if member else '' }}"></div>
-    <div class="mb-3"><label class="form-label">入职日期</label><input type="date" name="joined_at" class="form-control" value="{{ member.joined_at.strftime('%Y-%m-%d') if member and member.joined_at else '' }}"></div>
-    <button class="btn btn-primary">保存</button>
-    <a href="{{ url_for('team.list_members') }}" class="btn btn-outline-secondary">取消</a>
+
+    <div class="form-group">
+        <label class="form-label">职位</label>
+        <input type="text" name="title" class="form-input" value="{{ member.title if member else '' }}">
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">技能标签（逗号分隔）</label>
+        <input type="text" name="skills" class="form-input" value="{{ member.skills if member else '' }}" placeholder="如: Python, 深度学习, CT重建">
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">负责的技术点</label>
+        <input type="text" name="responsible_for" class="form-input" value="{{ member.responsible_for if member else '' }}">
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">入职日期</label>
+        <input type="date" name="joined_at" class="form-input" value="{{ member.joined_at.strftime('%Y-%m-%d') if member and member.joined_at else '' }}">
+    </div>
+
+    <div class="form-actions">
+        <button class="btn btn-primary">保存</button>
+        <a href="{{ url_for('team.list_members') }}" class="btn btn-outline">取消</a>
+    </div>
 </form>
 {% endblock %}

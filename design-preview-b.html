@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方案 B：深色数据驾驶舱 — RadResearch 设计预览</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-primary: #1E40AF;
+  --color-on-primary: #FFFFFF;
+  --color-secondary: #3B82F6;
+  --color-on-secondary: #FFFFFF;
+  --color-accent: #D97706;
+  --color-on-accent: #0F172A;
+  --color-bg: #0A0E1A;
+  --color-surface: #111827;
+  --color-surface-elevated: #1A2332;
+  --color-fg: #E2E8F0;
+  --color-fg-muted: #94A3B8;
+  --color-border: #1E293B;
+  --color-border-glow: #1E3A5F;
+  --color-destructive: #EF4444;
+  --color-on-destructive: #FFFFFF;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-info: #3B82F6;
+  --glow-primary: 0 0 20px rgba(59,130,246,.15);
+  --glow-accent: 0 0 20px rgba(217,119,6,.15);
+  --shadow-card: 0 1px 2px rgba(0,0,0,.3);
+  --shadow-elevated: 0 4px 16px rgba(0,0,0,.4);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --transition: 200ms ease;
+  --font-heading: 'Fira Code', monospace;
+  --font-body: 'Fira Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── Topbar ── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  display: flex; align-items: center; gap: 20px;
+  padding: 0 24px; height: 52px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.3);
+}
+.topbar-brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-heading); font-weight: 700; font-size: 15px; }
+.topbar-brand .logo {
+  width: 28px; height: 28px; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  border-radius: 4px; display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 13px; font-weight: 700;
+}
+.topbar-nav { display: flex; gap: 4px; flex: 1; }
+.topbar-nav a {
+  padding: 8px 16px; border-radius: var(--radius-sm);
+  text-decoration: none; color: var(--color-fg-muted);
+  font-size: 13px; font-weight: 500; letter-spacing: .3px;
+  transition: all var(--transition);
+}
+.topbar-nav a:hover { background: rgba(255,255,255,.05); color: var(--color-fg); }
+.topbar-nav a.active { background: var(--color-primary); color: var(--color-on-primary); }
+.topbar-status { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--color-success); font-family: var(--font-heading); }
+.topbar-status .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-success); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.3; } }
+
+/* ── Main ── */
+.main { padding: 24px 28px; max-width: 1440px; margin: 0 auto; }
+.page-header { margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; }
+.page-header h1 { font-family: var(--font-heading); font-size: 22px; font-weight: 600; }
+.page-header .time { font-family: var(--font-heading); font-size: 12px; color: var(--color-fg-muted); }
+
+/* ── Stats Row ── */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--color-surface); border-radius: var(--radius-md);
+  padding: 18px; border: 1px solid var(--color-border);
+  position: relative; overflow: hidden;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.stat-card:hover { border-color: var(--color-border-glow); box-shadow: var(--glow-primary); }
+.stat-card::after {
+  content: ''; position: absolute; top: 0; right: 0;
+  width: 80px; height: 80px; border-radius: 50%;
+  transform: translate(30px, -30px); opacity: .08;
+}
+.stat-card.blue::after { background: var(--color-info); }
+.stat-card.green::after { background: var(--color-success); }
+.stat-card.amber::after { background: var(--color-warning); }
+.stat-card.red::after { background: var(--color-destructive); }
+.stat-card .stat-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.stat-card .stat-icon { font-size: 22px; position: relative; z-index: 1; }
+.stat-card .stat-change { font-size: 11px; font-family: var(--font-heading); padding: 2px 6px; border-radius: 3px; }
+.stat-card .stat-change.up { color: var(--color-success); background: rgba(16,185,129,.1); }
+.stat-card .stat-change.down { color: var(--color-destructive); background: rgba(239,68,68,.1); }
+.stat-card .stat-value { font-family: var(--font-heading); font-size: 30px; font-weight: 700; position: relative; z-index: 1; }
+.stat-card .stat-label { font-size: 12px; color: var(--color-fg-muted); position: relative; z-index: 1; }
+
+/* ── Kanban ── */
+.section-label { font-family: var(--font-heading); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--color-fg-muted); margin-bottom: 14px; }
+.kanban-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.kanban-col {
+  background: var(--color-surface); border-radius: var(--radius-md);
+  border: 1px solid var(--color-border); overflow: hidden;
+}
+.kanban-col-header {
+  padding: 12px 16px; font-family: var(--font-heading); font-size: 12px; font-weight: 600;
+  display: flex; align-items: center; gap: 8px; letter-spacing: .5px;
+}
+.kanban-col-header .count { font-size: 11px; padding: 1px 7px; border-radius: 10px; font-weight: 500; font-family: var(--font-body); }
+.kanban-col-header.cyan { border-bottom: 2px solid #06B6D4; color: #06B6D4; }
+.kanban-col-header.cyan .count { background: rgba(6,182,212,.15); }
+.kanban-col-header.amber { border-bottom: 2px solid #F59E0B; color: #F59E0B; }
+.kanban-col-header.amber .count { background: rgba(245,158,11,.15); }
+.kanban-col-header.purple { border-bottom: 2px solid #8B5CF6; color: #8B5CF6; }
+.kanban-col-header.purple .count { background: rgba(139,92,246,.15); }
+.kanban-col-header.green { border-bottom: 2px solid #10B981; color: #10B981; }
+.kanban-col-header.green .count { background: rgba(16,185,129,.15); }
+.kanban-col-body { padding: 8px 12px 12px; display: flex; flex-direction: column; gap: 8px; }
+.kanban-card {
+  background: var(--color-surface-elevated); border-radius: var(--radius-sm);
+  padding: 10px 12px; border: 1px solid var(--color-border);
+  font-size: 12px; cursor: pointer;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.kanban-card:hover { border-color: var(--color-border-glow); box-shadow: var(--glow-primary); }
+.kanban-card .card-tag { display: inline-block; font-size: 9px; padding: 1px 6px; border-radius: 3px; margin-bottom: 6px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; }
+.kanban-card .card-tag.ct { background: rgba(6,182,212,.15); color: #06B6D4; }
+.kanban-card .card-tag.mri { background: rgba(139,92,246,.15); color: #8B5CF6; }
+.kanban-card .card-title { font-weight: 600; margin-bottom: 3px; }
+.kanban-card .card-meta { font-size: 10px; color: var(--color-fg-muted); }
+
+/* ── Two Column ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.card-panel {
+  background: var(--color-surface); border-radius: var(--radius-md);
+  border: 1px solid var(--color-border); overflow: hidden;
+}
+.card-panel-header {
+  padding: 14px 18px; border-bottom: 1px solid var(--color-border);
+  font-family: var(--font-heading); font-weight: 600; font-size: 12px;
+  text-transform: uppercase; letter-spacing: .5px;
+}
+.card-panel-body { padding: 14px 18px; }
+
+/* ── Member Card ── */
+.member-card {
+  display: flex; gap: 14px; align-items: center;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  transition: all var(--transition); margin-bottom: 6px;
+}
+.member-card:hover { border-color: var(--color-border); background: var(--color-surface-elevated); }
+.member-avatar { width: 40px; height: 40px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #fff; flex-shrink: 0; font-family: var(--font-heading); }
+.member-info { flex: 1; }
+.member-info .mname { font-weight: 600; font-size: 13px; }
+.member-info .mrole { font-size: 11px; color: var(--color-fg-muted); }
+.member-tags { display: flex; gap: 4px; }
+.member-tags span { font-size: 9px; padding: 2px 7px; border-radius: 3px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
+
+/* ── Table ── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.data-table th { text-align: left; padding: 8px 12px; border-bottom: 2px solid var(--color-border); font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: .8px; color: var(--color-fg-muted); font-family: var(--font-heading); }
+.data-table td { padding: 8px 12px; border-bottom: 1px solid var(--color-border); }
+.data-table tr:hover td { background: rgba(255,255,255,.02); }
+.status-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; }
+.status-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
+.status-badge .dot.active { background: var(--color-success); box-shadow: 0 0 6px rgba(16,185,129,.5); }
+.status-badge .dot.pending { background: var(--color-warning); box-shadow: 0 0 6px rgba(245,158,11,.5); }
+.status-badge .dot.paused { background: var(--color-fg-muted); }
+.severity { font-family: var(--font-heading); font-size: 11px; font-weight: 600; }
+.severity.high { color: var(--color-destructive); }
+.severity.medium { color: var(--color-warning); }
+
+/* ── Footer badge ── */
+.design-badge {
+  position: fixed; bottom: 16px; right: 16px;
+  background: var(--color-surface-elevated); border: 1px solid var(--color-border-glow);
+  border-radius: 20px; padding: 6px 16px;
+  font-family: var(--font-heading); font-size: 11px; font-weight: 600;
+  box-shadow: var(--glow-primary); display: flex; align-items: center; gap: 6px;
+}
+.design-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-accent); animation: pulse 2s infinite; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-brand">
+    <div class="logo">R</div>
+    RadResearch
+  </div>
+  <nav class="topbar-nav">
+    <a href="#" class="active">仪表盘</a>
+    <a href="#">业务管理</a>
+    <a href="#">团队管理</a>
+    <a href="#">流程制度</a>
+  </nav>
+  <div class="topbar-status"><span class="live-dot"></span>SYS OK</div>
+</header>
+
+<main class="main">
+  <div class="page-header">
+    <h1>// dashboard</h1>
+    <div class="time">2026-06-21 14:32:08 CST</div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card blue">
+      <div class="stat-header"><span class="stat-icon">🔬</span><span class="stat-change up">+2</span></div>
+      <div class="stat-value">24</div>
+      <div class="stat-label">技术点总数</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-header"><span class="stat-icon">⚡</span><span class="stat-change up">+3</span></div>
+      <div class="stat-value">12</div>
+      <div class="stat-label">进行中</div>
+    </div>
+    <div class="stat-card amber">
+      <div class="stat-header"><span class="stat-icon">👥</span><span class="stat-change up">+1</span></div>
+      <div class="stat-value">8</div>
+      <div class="stat-label">团队成员</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-header"><span class="stat-icon">⚠</span><span class="stat-change down">-1</span></div>
+      <div class="stat-value">3</div>
+      <div class="stat-label">待处理问题</div>
+    </div>
+  </div>
+
+  <!-- Kanban -->
+  <div class="section-label">● 研发管线</div>
+  <div class="kanban-board">
+    <div class="kanban-col">
+      <div class="kanban-col-header cyan">TRL2 · 需求收集 <span class="count">3</span></div>
+      <div class="kanban-col-body">
+        <div class="kanban-card">
+          <span class="card-tag ct">CT</span>
+          <div class="card-title">低剂量CT重建算法优化</div>
+          <div class="card-meta">张工 · T-2h</div>
+        </div>
+        <div class="kanban-card">
+          <span class="card-tag mri">MRI</span>
+          <div class="card-title">磁共振快速成像序列研究</div>
+          <div class="card-meta">李工 · T-1d</div>
+        </div>
+      </div>
+    </div>
+    <div class="kanban-col">
+      <div class="kanban-col-header amber">TRL3 · 功能构思 <span class="count">2</span></div>
+      <div class="kanban-col-body">
+        <div class="kanban-card">
+          <span class="card-tag ct">CT</span>
+          <div class="card-title">AI辅助肺结节检测算法</div>
+          <div class="card-meta">王工 · 评审中</div>
+        </div>
+      </div>
+    </div>
+    <div class="kanban-col">
+      <div class="kanban-col-header purple">TRL6 · 方案预研 <span class="count">1</span></div>
+      <div class="kanban-col-body">
+        <div class="kanban-card">
+          <span class="card-tag mri">MRI</span>
+          <div class="card-title">深度学习图像重建框架</div>
+          <div class="card-meta">赵工 · 预研中</div>
+        </div>
+      </div>
+    </div>
+    <div class="kanban-col">
+      <div class="kanban-col-header green">TRL7 · 版本开发 <span class="count">2</span></div>
+      <div class="kanban-col-body">
+        <div class="kanban-card">
+          <span class="card-tag ct">CT</span>
+          <div class="card-title">剂量报告自动生成模块</div>
+          <div class="card-meta">张工 · v1.2</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Two Column: Team + Issues -->
+  <div class="two-col">
+    <div class="card-panel">
+      <div class="card-panel-header">■ 团队成员</div>
+      <div class="card-panel-body">
+        <div class="member-card">
+          <div class="member-avatar" style="background:#1E40AF;">张</div>
+          <div class="member-info"><div class="mname">张工</div><div class="mrole">CT重建组 · A级</div></div>
+          <div class="member-tags"><span style="background:rgba(6,182,212,.15);color:#06B6D4;">算法</span><span style="background:rgba(16,185,129,.15);color:#10B981;">工程</span></div>
+        </div>
+        <div class="member-card">
+          <div class="member-avatar" style="background:#8B5CF6;">李</div>
+          <div class="member-info"><div class="mname">李工</div><div class="mrole">MRI组 · B级</div></div>
+          <div class="member-tags"><span style="background:rgba(139,92,246,.15);color:#8B5CF6;">临床</span><span style="background:rgba(245,158,11,.15);color:#F59E0B;">创新</span></div>
+        </div>
+        <div class="member-card">
+          <div class="member-avatar" style="background:#059669;">王</div>
+          <div class="member-info"><div class="mname">王工</div><div class="mrole">超声组 · A级</div></div>
+          <div class="member-tags"><span style="background:rgba(236,72,153,.15);color:#EC4899;">沟通</span><span style="background:rgba(6,182,212,.15);color:#06B6D4;">算法</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-panel">
+      <div class="card-panel-header">■ 待处理问题</div>
+      <div class="card-panel-body">
+        <table class="data-table">
+          <thead><tr><th>问题</th><th>类别</th><th>严重</th><th>状态</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>CT重建精度验证标准缺失</td>
+              <td><span style="color:var(--color-fg-muted);">流程</span></td>
+              <td><span class="severity high">HIGH</span></td>
+              <td><span class="status-badge"><span class="dot active"></span>处理中</span></td>
+            </tr>
+            <tr>
+              <td>MRI数据标注规范未统一</td>
+              <td><span style="color:var(--color-fg-muted);">规范</span></td>
+              <td><span class="severity medium">MED</span></td>
+              <td><span class="status-badge"><span class="dot pending"></span>待处理</span></td>
+            </tr>
+            <tr>
+              <td>超声组设备采购进度滞后</td>
+              <td><span style="color:var(--color-fg-muted);">资源</span></td>
+              <td><span class="severity medium">MED</span></td>
+              <td><span class="status-badge"><span class="dot paused"></span>暂停</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="design-badge"><span class="dot"></span>方案 B · 深色数据驾驶舱</div>
+</body>
+</html>

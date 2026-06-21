@@ -1,40 +1,58 @@
 {% extends "base.html" %}
 {% block title %}{{ member.name }}{% endblock %}
 {% block content %}
-<div class="row">
-    <div class="col-md-5">
-        <h2>{{ member.name }}
-            <span class="badge bg-{{ 'success' if member.level == 'A' else 'warning' if member.level == 'B' else 'secondary' }}">{{ member.level }}级</span>
-        </h2>
-        <div class="text-muted mb-2">{{ member.group or '-' }} · {{ member.title or '-' }}</div>
-        {% if member.skills %}
-        <div class="mb-2">
-            {% for sk in member.skills.split(',') %}<span class="badge bg-info text-dark">{{ sk.strip() }}</span>{% endfor %}
-        </div>
-        {% endif %}
-        {% if member.responsible_for %}<div class="small">负责: {{ member.responsible_for }}</div>{% endif %}
-
-        <h6 class="mt-4 mb-2">能力评分</h6>
-        <form method="post" action="{{ url_for('team.edit_score', id=member.id) }}">
-            {% for dim in dimensions %}
-            <div class="mb-2">
-                <label class="form-label small mb-1">{{ dim }}</label>
-                <input type="range" class="form-range" name="{{ dim }}" min="0" max="10"
-                       value="{{ scores.get(dim, 0) }}"
-                       oninput="this.nextElementSibling.textContent=this.value">
-                <span class="small text-muted">{{ scores.get(dim, 0) }}</span>
-            </div>
-            {% endfor %}
-            <button class="btn btn-primary btn-sm">保存评分</button>
-        </form>
+<div class="page-header-row">
+    <div>
+        <h1>{{ member.name }}</h1>
+        <p>{{ member.group or '-' }} · {{ member.title or '-' }}</p>
     </div>
-    <div class="col-md-7">
-        <div class="radar-container">
-            <canvas id="radarChart"></canvas>
+    <span class="badge badge-lg {{ 'badge-success' if member.level == 'A' else 'badge-warning' if member.level == 'B' else 'badge-secondary' }}">{{ member.level }}级</span>
+</div>
+
+{% if member.skills %}
+<div class="mb-4 flex-center gap-2" style="flex-wrap:wrap;">
+    {% for sk in member.skills.split(',') %}
+    <span class="badge badge-info">{{ sk.strip() }}</span>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if member.responsible_for %}
+<div class="text-sm text-muted mb-4">负责: {{ member.responsible_for }}</div>
+{% endif %}
+
+<div class="two-col">
+    <div class="card-panel">
+        <div class="card-panel-header">能力评分</div>
+        <div class="card-panel-body">
+            <form method="post" action="{{ url_for('team.edit_score', id=member.id) }}">
+                {% for dim in dimensions %}
+                <div class="range-group">
+                    <label>{{ dim }}</label>
+                    <div class="range-row">
+                        <input type="range" name="{{ dim }}" min="0" max="10"
+                               value="{{ scores.get(dim, 0) }}"
+                               oninput="this.nextElementSibling.textContent=this.value">
+                        <span class="range-value">{{ scores.get(dim, 0) }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+                <button class="btn btn-primary btn-sm mt-3">保存评分</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card-panel">
+        <div class="card-panel-header">能力雷达图</div>
+        <div class="card-panel-body">
+            <div class="radar-container">
+                <canvas id="radarChart"></canvas>
+            </div>
         </div>
     </div>
 </div>
 {% endblock %}
+
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
@@ -47,13 +65,30 @@ new Chart(ctx, {
             label: '能力评估',
             data: {{ chart_values | tojson }},
             fill: true,
-            backgroundColor: 'rgba(13,110,253,0.2)',
-            borderColor: 'rgb(13,110,253)',
-            pointBackgroundColor: 'rgb(13,110,253)',
+            backgroundColor: 'rgba(8,145,178,0.15)',
+            borderColor: '#0891B2',
+            pointBackgroundColor: '#0891B2',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 5,
+            borderWidth: 2,
         }]
     },
     options: {
-        scales: { r: { beginAtZero: true, max: 10, suggestedMin: 0 } }
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            r: {
+                beginAtZero: true,
+                max: 10,
+                suggestedMin: 0,
+                ticks: { stepSize: 2, font: { size: 11 }, backdropColor: 'transparent' },
+                grid: { color: 'rgba(8,145,178,0.1)' },
+                angleLines: { color: 'rgba(8,145,178,0.1)' },
+                pointLabels: { font: { size: 12, family: "'Noto Sans', sans-serif" } }
+            }
+        }
     }
 });
 </script>

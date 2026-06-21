@@ -1,45 +1,60 @@
 {% extends "base.html" %}
 {% block title %}流程制度 — 问题记录{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <ul class="nav nav-tabs">
-        <li class="nav-item"><a class="nav-link active" href="{{ url_for('process.list_issues') }}">问题记录</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('process.list_policies') }}">制度文档</a></li>
-    </ul>
+<div class="page-header-row">
+    <div>
+        <h1>流程制度</h1>
+        <p>问题记录与制度文档管理</p>
+    </div>
     <a href="{{ url_for('process.new_issue') }}" class="btn btn-primary">+ 记录问题</a>
 </div>
-<form method="get" class="row g-2 mb-3">
-    <div class="col-auto">
-        <select name="category" class="form-select form-select-sm">
-            <option value="">全部分类</option>
-            {% for c in categories %}<option value="{{ c }}" {% if filters.category == c %}selected{% endif %}>{{ c }}</option>{% endfor %}
-        </select>
-    </div>
-    <div class="col-auto">
-        <select name="status" class="form-select form-select-sm">
-            <option value="">全部状态</option>
-            {% for s in statuses %}<option value="{{ s }}" {% if filters.status == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
-        </select>
-    </div>
-    <div class="col-auto"><button class="btn btn-outline-primary btn-sm">筛选</button></div>
+
+<div class="tabs">
+    <a href="{{ url_for('process.list_issues') }}" class="active">问题记录</a>
+    <a href="{{ url_for('process.list_policies') }}">制度文档</a>
+</div>
+
+<form method="get" class="filter-bar">
+    <select name="category" class="form-select">
+        <option value="">全部分类</option>
+        {% for c in categories %}<option value="{{ c }}" {% if filters.category == c %}selected{% endif %}>{{ c }}</option>{% endfor %}
+    </select>
+    <select name="status" class="form-select">
+        <option value="">全部状态</option>
+        {% for s in statuses %}<option value="{{ s }}" {% if filters.status == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+    </select>
+    <button class="btn btn-outline btn-sm">筛选</button>
 </form>
-<table class="table table-hover align-middle">
-    <thead class="table-light">
-        <tr><th>问题描述</th><th>分类</th><th>严重度</th><th>关联制度</th><th>状态</th><th></th></tr>
+
+{% if issues %}
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>问题描述</th>
+            <th>分类</th>
+            <th>严重度</th>
+            <th>关联制度</th>
+            <th>状态</th>
+            <th></th>
+        </tr>
     </thead>
     <tbody>
         {% for i in issues %}
         <tr>
             <td><a href="{{ url_for('process.edit_issue', id=i.id) }}">{{ i.title }}</a></td>
-            <td><span class="badge bg-warning text-dark">{{ i.category }}</span></td>
-            <td><span class="text-{{ 'danger' if i.severity == '高' else 'warning' if i.severity == '中' else 'secondary' }}">● {{ i.severity }}</span></td>
-            <td>{% if i.policy %}<a href="{{ url_for('process.edit_policy', id=i.policy.id) }}">{{ i.policy.title }}</a>{% else %}-{% endif %}</td>
-            <td><span class="badge bg-{{ 'success' if i.status == '已建制度' else 'secondary' if i.status == '已关闭' else 'warning' }}">{{ i.status }}</span></td>
-            <td><a href="{{ url_for('process.edit_issue', id=i.id) }}" class="btn btn-sm btn-outline-secondary">编辑</a></td>
+            <td><span class="badge badge-warning">{{ i.category }}</span></td>
+            <td><span class="severity-{{ 'high' if i.severity == '高' else 'medium' if i.severity == '中' else 'low' }}">● {{ i.severity }}</span></td>
+            <td>{% if i.policy %}<a href="{{ url_for('process.edit_policy', id=i.policy.id) }}" class="text-sm">{{ i.policy.title }}</a>{% else %}<span class="text-muted text-sm">-</span>{% endif %}</td>
+            <td><span class="badge {{ 'badge-success' if i.status == '已建制度' else 'badge-secondary' if i.status == '已关闭' else 'badge-warning' }}">{{ i.status }}</span></td>
+            <td><a href="{{ url_for('process.edit_issue', id=i.id) }}" class="btn btn-outline btn-sm">编辑</a></td>
         </tr>
-        {% else %}
-        <tr><td colspan="6" class="text-center text-muted py-4">暂无问题记录</td></tr>
         {% endfor %}
     </tbody>
 </table>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">📋</div>
+    <div class="empty-text">暂无问题记录</div>
+</div>
+{% endif %}
 {% endblock %}

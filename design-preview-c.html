@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方案 C：现代 SaaS 极简风 — RadResearch 设计预览</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-primary: #0F172A;
+  --color-on-primary: #FFFFFF;
+  --color-accent: #0284C7;
+  --color-on-accent: #FFFFFF;
+  --color-bg: #FAFBFC;
+  --color-surface: #FFFFFF;
+  --color-fg: #0F172A;
+  --color-fg-secondary: #475569;
+  --color-fg-muted: #94A3B8;
+  --color-border: #E2E8F0;
+  --color-border-hover: #CBD5E1;
+  --color-destructive: #DC2626;
+  --color-on-destructive: #FFFFFF;
+  --color-success: #059669;
+  --color-warning: #D97706;
+  --color-info: #0284C7;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --spacing-unit: 8px;
+  --transition: 150ms ease;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  line-height: 1.55;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: 220px; background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  display: flex; flex-direction: column;
+  z-index: 100;
+}
+.sidebar-brand {
+  padding: 20px 20px 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.sidebar-brand .logo {
+  width: 28px; height: 28px; background: var(--color-primary);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 14px; font-weight: 800;
+}
+.sidebar-brand .name { font-weight: 700; font-size: 15px; letter-spacing: -.3px; }
+.sidebar-brand .name small { display: block; font-weight: 400; font-size: 10px; color: var(--color-fg-muted); letter-spacing: 0; }
+.sidebar-nav { flex: 1; padding: 0 12px; display: flex; flex-direction: column; gap: 1px; }
+.sidebar-nav a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: var(--radius-sm);
+  text-decoration: none; color: var(--color-fg-secondary);
+  font-size: 13px; font-weight: 500;
+  transition: all var(--transition);
+}
+.sidebar-nav a:hover { background: #F1F5F9; color: var(--color-fg); }
+.sidebar-nav a.active { background: #F1F5F9; color: var(--color-fg); font-weight: 600; }
+.sidebar-nav a .icon { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; opacity: .6; }
+.sidebar-nav a.active .icon { opacity: 1; }
+.sidebar-footer { padding: 16px 20px; border-top: 1px solid var(--color-border); font-size: 11px; color: var(--color-fg-muted); }
+
+/* ── Main ── */
+.main { margin-left: 220px; padding: 32px 40px; max-width: 1200px; }
+.page-header { margin-bottom: 32px; }
+.page-header h1 { font-size: 28px; font-weight: 800; letter-spacing: -.5px; }
+.page-header p { color: var(--color-fg-muted); font-size: 14px; margin-top: 4px; }
+
+/* ── Stats: Bento Grid ── */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 32px; }
+.stat-card {
+  background: var(--color-surface); border-radius: var(--radius-lg);
+  padding: 20px; border: 1px solid var(--color-border);
+  transition: border-color var(--transition);
+}
+.stat-card:hover { border-color: var(--color-border-hover); }
+.stat-card .stat-label { font-size: 12px; color: var(--color-fg-muted); font-weight: 500; margin-bottom: 8px; }
+.stat-card .stat-value { font-size: 32px; font-weight: 800; letter-spacing: -1px; }
+.stat-card .stat-sub { font-size: 12px; color: var(--color-fg-muted); margin-top: 4px; }
+.stat-card .stat-sub strong { color: var(--color-success); }
+
+/* ── Section Header ── */
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.section-header h2 { font-size: 16px; font-weight: 700; }
+.section-header a { font-size: 13px; color: var(--color-accent); text-decoration: none; font-weight: 600; }
+.section-header a:hover { text-decoration: underline; }
+
+/* ── Kanban ── */
+.kanban-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 32px; }
+.kanban-col {
+  background: var(--color-surface); border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+.kanban-col-header {
+  padding: 14px 16px 10px;
+  font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
+}
+.kanban-col-header .count { font-size: 11px; background: #F1F5F9; color: var(--color-fg-secondary); padding: 1px 8px; border-radius: 10px; font-weight: 600; }
+.kanban-col-body { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 8px; }
+.kanban-card {
+  background: var(--color-bg); border-radius: var(--radius-sm);
+  padding: 10px 12px; border: 1px solid var(--color-border);
+  font-size: 12px; cursor: pointer;
+  transition: border-color var(--transition);
+}
+.kanban-card:hover { border-color: var(--color-border-hover); }
+.kanban-card .card-tag { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-bottom: 6px; font-weight: 700; }
+.kanban-card .card-tag.ct { background: #E0F2FE; color: #0284C7; }
+.kanban-card .card-tag.mri { background: #EDE9FE; color: #7C3AED; }
+.kanban-card .card-title { font-weight: 600; margin-bottom: 2px; }
+.kanban-card .card-meta { font-size: 11px; color: var(--color-fg-muted); }
+
+/* ── Two Column ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.card-panel {
+  background: var(--color-surface); border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border); overflow: hidden;
+}
+.card-panel-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--color-border);
+  font-weight: 700; font-size: 14px;
+}
+.card-panel-body { padding: 12px 20px; }
+
+/* ── Member Row ── */
+.member-row {
+  display: flex; gap: 14px; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid var(--color-border);
+}
+.member-row:last-child { border-bottom: none; }
+.member-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #fff; flex-shrink: 0; }
+.member-info { flex: 1; }
+.member-info .mname { font-weight: 600; font-size: 13px; }
+.member-info .mrole { font-size: 11px; color: var(--color-fg-muted); }
+.member-level { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; }
+.member-level.a { background: #FEF3C7; color: #B45309; }
+.member-level.b { background: #F1F5F9; color: #475569; }
+
+/* ── Issue List ── */
+.issue-item {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 10px 0; border-bottom: 1px solid var(--color-border);
+}
+.issue-item:last-child { border-bottom: none; }
+.issue-severity { width: 6px; height: 6px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+.issue-severity.high { background: var(--color-destructive); }
+.issue-severity.medium { background: var(--color-warning); }
+.issue-content { flex: 1; }
+.issue-content .ititle { font-size: 13px; font-weight: 600; }
+.issue-content .imeta { font-size: 11px; color: var(--color-fg-muted); margin-top: 2px; }
+.issue-status { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 4px; white-space: nowrap; }
+.issue-status.active { background: #DCFCE7; color: #059669; }
+.issue-status.pending { background: #FEF3C7; color: #B45309; }
+.issue-status.paused { background: #F1F5F9; color: #64748B; }
+
+/* ── Footer badge ── */
+.design-badge {
+  position: fixed; bottom: 16px; right: 16px;
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: 20px; padding: 6px 16px;
+  font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px;
+}
+.design-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-accent); }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo">R</div>
+    <div class="name">RadResearch<small>放射影像 · 算法研究部</small></div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="#" class="active"><span class="icon">◉</span>仪表盘</a>
+    <a href="#"><span class="icon">◫</span>业务管理</a>
+    <a href="#"><span class="icon">◎</span>团队管理</a>
+    <a href="#"><span class="icon">▦</span>流程制度</a>
+  </nav>
+  <div class="sidebar-footer">© 2026 RadResearch v2.0</div>
+</aside>
+
+<main class="main">
+  <div class="page-header">
+    <h1>仪表盘</h1>
+    <p>放射影像算法研究部 · 研发管理总览</p>
+  </div>
+
+  <!-- Stats Bento Grid -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">技术点总数</div>
+      <div class="stat-value">24</div>
+      <div class="stat-sub"><strong>↑ 2</strong> 较上月</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">进行中</div>
+      <div class="stat-value">12</div>
+      <div class="stat-sub"><strong>↑ 3</strong> 较上月</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">团队成员</div>
+      <div class="stat-value">8</div>
+      <div class="stat-sub">4 个研究组</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">待处理问题</div>
+      <div class="stat-value">3</div>
+      <div class="stat-sub"><strong style="color:#DC2626;">↓ 1</strong> 较上月</div>
+    </div>
+  </div>
+
+  <!-- Kanban -->
+  <div class="section-header">
+    <h2>研发看板</h2>
+    <a href="#">查看全部 →</a>
+  </div>
+  <div class="kanban-board">
+    <div class="kanban-col">
+      <div class="kanban-col-header">TRL2 · 需求收集 <span class="count">3</span></div>
+      <div class="kanban-col-body">
+        <div class="kanban-card">
+          <span class="card-tag ct">CT</span>
+          <div class="card-title">低剂量CT重建算法优化</div>
+          <div class="card-meta">张工 · 2小时前</div>
+        </div>
+        <div class="kanban-card">
+          <span class="card-tag mri">MRI</span>
+          <div class="card-title">磁共振快速成像序列研究</div>
+          <div class="card-meta">李工 · 1天前</div>
+        </div>
+      </div>
+    </div>
+    <div class="kanban-col">
+      <div class="kanban-col-header">TRL3 · 功能构思 <span class="count">2</span></div>
+      <div class="kanban-col-body">
+        <div class="kanban-card">
+          <span class="card-tag ct">CT</span>
+          <div class="card-title">AI辅助肺结节检测算法</div>
+          <div class="card-meta">王工 · 评审中</div>
+        </div>
+      </div>
+    </div>
+    <div class="kanban-col">
+      <div class="kanban-col-header">TRL6 · 方案预研 <span class="count">1</span></div>
+      <div class="kanban-col-body">
+        <div class="kanban-card">
+          <span class="card-tag mri">MRI</span>
+          <div class="card-title">深度学习图像重建框架</div>
+          <div class="card-meta">赵工 · 预研中</div>
+        </div>
+      </div>
+    </div>
+    <div class="kanban-col">
+      <div class="kanban-col-header">TRL7 · 版本开发 <span class="count">2</span></div>
+      <div class="kanban-col-body">
+        <div class="kanban-card">
+          <span class="card-tag ct">CT</span>
+          <div class="card-title">剂量报告自动生成模块</div>
+          <div class="card-meta">张工 · v1.2 开发中</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Two Column: Team + Issues -->
+  <div class="two-col">
+    <div class="card-panel">
+      <div class="card-panel-header">团队成员</div>
+      <div class="card-panel-body">
+        <div class="member-row">
+          <div class="member-avatar" style="background:#0F172A;">张</div>
+          <div class="member-info"><div class="mname">张工</div><div class="mrole">CT重建组 · 算法负责人</div></div>
+          <span class="member-level a">A级</span>
+        </div>
+        <div class="member-row">
+          <div class="member-avatar" style="background:#475569;">李</div>
+          <div class="member-info"><div class="mname">李工</div><div class="mrole">MRI组 · 临床研究员</div></div>
+          <span class="member-level b">B级</span>
+        </div>
+        <div class="member-row">
+          <div class="member-avatar" style="background:#0284C7;">王</div>
+          <div class="member-info"><div class="mname">王工</div><div class="mrole">超声组 · 算法工程师</div></div>
+          <span class="member-level a">A级</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-panel">
+      <div class="card-panel-header">待处理问题</div>
+      <div class="card-panel-body">
+        <div class="issue-item">
+          <div class="issue-severity high"></div>
+          <div class="issue-content">
+            <div class="ititle">CT重建精度验证标准缺失</div>
+            <div class="imeta">流程类 · 关联政策: 影像质量控制规范</div>
+          </div>
+          <span class="issue-status active">处理中</span>
+        </div>
+        <div class="issue-item">
+          <div class="issue-severity medium"></div>
+          <div class="issue-content">
+            <div class="ititle">MRI数据标注规范未统一</div>
+            <div class="imeta">规范类 · 关联政策: 数据标注标准</div>
+          </div>
+          <span class="issue-status pending">待处理</span>
+        </div>
+        <div class="issue-item">
+          <div class="issue-severity medium"></div>
+          <div class="issue-content">
+            <div class="ititle">超声组设备采购进度滞后</div>
+            <div class="imeta">资源类 · 关联政策: 设备采购流程</div>
+          </div>
+          <span class="issue-status paused">暂停</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="design-badge"><span class="dot"></span>方案 C · 现代 SaaS 极简风</div>
+</body>
+</html>

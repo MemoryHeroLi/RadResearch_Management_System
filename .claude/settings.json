@@ -37,7 +37,20 @@
       "Bash(curl -s -o /dev/null -w \"流程制度 /process/issues : %{http_code}\\\\n\" http://127.0.0.1:5000/process/issues)",
       "Bash(curl -s http://127.0.0.1:5000/business/1)",
       "Bash(taskkill //F //IM python.exe)",
-      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/)"
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/)",
+      "Bash(python \"C:\\\\Users\\\\92169\\\\.claude\\\\plugins\\\\cache\\\\ui-ux-pro-max-skill\\\\ui-ux-pro-max\\\\2.5.0\\\\.claude\\\\skills\\\\ui-ux-pro-max\\\\scripts\\\\search.py\" \"healthcare radiology research admin dashboard professional clean\" --design-system -p \"RadResearch\" -f markdown)",
+      "Bash(python \"C:\\\\Users\\\\92169\\\\.claude\\\\plugins\\\\cache\\\\ui-ux-pro-max-skill\\\\ui-ux-pro-max\\\\2.5.0\\\\.claude\\\\skills\\\\ui-ux-pro-max\\\\scripts\\\\search.py\" \"admin dashboard data-dense minimal dark mode modern\" --design-system -p \"RadResearch\" -f markdown)",
+      "Bash(python \"C:\\\\Users\\\\92169\\\\.claude\\\\plugins\\\\cache\\\\ui-ux-pro-max-skill\\\\ui-ux-pro-max\\\\2.5.0\\\\.claude\\\\skills\\\\ui-ux-pro-max\\\\scripts\\\\search.py\" \"SaaS enterprise clean modern soft blue gradient glassmorphism\" --design-system -p \"RadResearch\" -f markdown)",
+      "Read(//c/Users/92169/.claude/plugins/cache/ui-ux-pro-max-skill/**)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" \"C:\\\\Users\\\\92169\\\\.claude\\\\plugins\\\\cache\\\\ui-ux-pro-max-skill\\\\ui-ux-pro-max\\\\2.5.0\\\\src\\\\ui-ux-pro-max\\\\scripts\\\\search.py\" \"healthcare medical research dashboard professional clean\" --design-system -p \"RadResearch\" -f markdown)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" \"C:\\\\Users\\\\92169\\\\.claude\\\\plugins\\\\cache\\\\ui-ux-pro-max-skill\\\\ui-ux-pro-max\\\\2.5.0\\\\src\\\\ui-ux-pro-max\\\\scripts\\\\search.py\" \"admin dashboard data-dense minimal dark mode modern\" --design-system -p \"RadResearch\" -f markdown)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" \"C:\\\\Users\\\\92169\\\\.claude\\\\plugins\\\\cache\\\\ui-ux-pro-max-skill\\\\ui-ux-pro-max\\\\2.5.0\\\\src\\\\ui-ux-pro-max\\\\scripts\\\\search.py\" \"SaaS enterprise clean modern soft blue\" --design-system -p \"RadResearch\" -f markdown)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" \"C:\\\\Users\\\\92169\\\\.claude\\\\plugins\\\\cache\\\\ui-ux-pro-max-skill\\\\ui-ux-pro-max\\\\2.5.0\\\\src\\\\ui-ux-pro-max\\\\scripts\\\\search.py\" \"healthcare medical research\" --domain color -n 3)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" \"C:\\\\Users\\\\92169\\\\.claude\\\\plugins\\\\cache\\\\ui-ux-pro-max-skill\\\\ui-ux-pro-max\\\\2.5.0\\\\src\\\\ui-ux-pro-max\\\\scripts\\\\search.py\" \"dashboard admin kanban data\" --domain ux -n 5)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" \"C:\\\\Users\\\\92169\\\\.claude\\\\plugins\\\\cache\\\\ui-ux-pro-max-skill\\\\ui-ux-pro-max\\\\2.5.0\\\\src\\\\ui-ux-pro-max\\\\scripts\\\\search.py\" \"modern professional clean dashboard\" --domain style -n 3)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" \"C:\\\\Users\\\\92169\\\\.claude\\\\plugins\\\\cache\\\\ui-ux-pro-max-skill\\\\ui-ux-pro-max\\\\2.5.0\\\\src\\\\ui-ux-pro-max\\\\scripts\\\\search.py\" \"dashboard kanban chart\" --stack html-tailwind -n 5)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -c \"from start import create_app; app = create_app\\(\\); print\\('App created successfully'\\); print\\('Blueprints:', [bp.name for bp in app.blueprints.values\\(\\)]\\); print\\('Routes:'\\); [print\\(f'  {rule.rule} -> {rule.endpoint}'\\) for rule in app.url_map.iter_rules\\(\\) if not rule.rule.startswith\\('/static'\\)]\")",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/ -v --tb=short)"
     ]
   }
 }

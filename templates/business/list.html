@@ -1,56 +1,58 @@
 {% extends "base.html" %}
 {% block title %}业务管理{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>技术点列表</h2>
+<div class="page-header-row">
+    <div>
+        <h1>技术点列表</h1>
+        <p>管理所有研发技术点</p>
+    </div>
     <a href="{{ url_for('business.new_tech_point') }}" class="btn btn-primary">+ 新增技术点</a>
 </div>
-<form method="get" class="row g-2 mb-3">
-    <div class="col-auto">
-        <select name="stage" class="form-select form-select-sm">
-            <option value="">全部阶段</option>
-            {% for s in stages %}
-            <option value="{{ s.stage }}" {% if filters.stage == s.stage %}selected{% endif %}>{{ s.stage }}-{{ s.name }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="col-auto">
-        <select name="status" class="form-select form-select-sm">
-            <option value="">全部状态</option>
-            {% for st in ['进行中', '已完成', '暂停'] %}
-            <option value="{{ st }}" {% if filters.status == st %}selected{% endif %}>{{ st }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="col-auto">
-        <input type="text" name="q" class="form-control form-control-sm" placeholder="搜索技术点..." value="{{ filters.q }}">
-    </div>
-    <div class="col-auto">
-        <button class="btn btn-outline-primary btn-sm">筛选</button>
-    </div>
+
+<form method="get" class="filter-bar">
+    <select name="stage" class="form-select">
+        <option value="">全部阶段</option>
+        {% for s in stages %}
+        <option value="{{ s.stage }}" {% if filters.stage == s.stage %}selected{% endif %}>阶段{{ s.stage }} · {{ s.name }}</option>
+        {% endfor %}
+    </select>
+    <select name="status" class="form-select">
+        <option value="">全部状态</option>
+        {% for st in ['进行中', '已完成', '暂停'] %}
+        <option value="{{ st }}" {% if filters.status == st %}selected{% endif %}>{{ st }}</option>
+        {% endfor %}
+    </select>
+    <input type="text" name="q" class="form-input" placeholder="搜索技术点..." value="{{ filters.q }}" style="min-width:180px;">
+    <button class="btn btn-outline btn-sm">筛选</button>
 </form>
-<table class="table table-hover align-middle">
-    <thead class="table-light">
+
+<table class="data-table">
+    <thead>
         <tr>
-            <th>技术点名称</th><th>技术方向</th><th>当前阶段</th>
-            <th>状态</th><th>负责人</th><th>更新时间</th><th></th>
+            <th>技术点名称</th>
+            <th>技术方向</th>
+            <th>当前阶段</th>
+            <th>状态</th>
+            <th>负责人</th>
+            <th>更新时间</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
         {% for p in points %}
         <tr>
             <td><a href="{{ url_for('business.view_tech_point', id=p.id) }}">{{ p.name }}</a></td>
-            <td><span class="badge bg-info text-dark">{{ p.direction }}</span></td>
-            <td><span class="badge bg-warning text-dark">阶段{{ p.current_stage }}</span></td>
+            <td><span class="badge badge-info">{{ p.direction }}</span></td>
+            <td><span class="badge badge-warning">阶段{{ p.current_stage }}</span></td>
             <td>
-                <span class="badge bg-{{ 'success' if p.status == '已完成' else 'warning' if p.status == '进行中' else 'secondary' }}">{{ p.status }}</span>
+                <span class="badge {{ 'badge-success' if p.status == '已完成' else 'badge-warning' if p.status == '进行中' else 'badge-secondary' }}">{{ p.status }}</span>
             </td>
             <td>{{ p.owner or '-' }}</td>
-            <td class="text-muted small">{{ p.updated_at.strftime('%Y-%m-%d') if p.updated_at else '' }}</td>
-            <td><a href="{{ url_for('business.edit_tech_point', id=p.id) }}" class="btn btn-sm btn-outline-secondary">编辑</a></td>
+            <td class="text-muted text-sm">{{ p.updated_at.strftime('%Y-%m-%d') if p.updated_at else '' }}</td>
+            <td><a href="{{ url_for('business.edit_tech_point', id=p.id) }}" class="btn btn-outline btn-sm">编辑</a></td>
         </tr>
         {% else %}
-        <tr><td colspan="7" class="text-center text-muted py-4">暂无技术点，点击右上角新增</td></tr>
+        <tr class="empty-row"><td colspan="7">暂无技术点，点击右上角新增</td></tr>
         {% endfor %}
     </tbody>
 </table>

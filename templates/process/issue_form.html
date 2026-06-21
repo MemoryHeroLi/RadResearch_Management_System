@@ -1,38 +1,54 @@
 {% extends "base.html" %}
 {% block title %}{{ '编辑' if issue else '记录' }}问题{% endblock %}
 {% block content %}
-<h2 class="mb-4">{{ '编辑' if issue else '记录' }}问题</h2>
+<div class="page-header">
+    <h1>{{ '编辑' if issue else '记录' }}问题</h1>
+    <p>记录研发过程中的问题与改进点</p>
+</div>
+
 <form method="post">
-    <div class="mb-3"><label class="form-label">问题描述 *</label><input type="text" name="title" class="form-control" required value="{{ issue.title if issue else '' }}"></div>
-    <div class="row mb-3">
-        <div class="col">
+    <div class="form-group">
+        <label class="form-label">问题描述 <span class="required">*</span></label>
+        <input type="text" name="title" class="form-input" required value="{{ issue.title if issue else '' }}">
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
             <label class="form-label">分类</label>
             <select name="category" class="form-select">
                 {% for c in categories %}<option value="{{ c }}" {% if issue and issue.category == c %}selected{% endif %}>{{ c }}</option>{% endfor %}
             </select>
         </div>
-        <div class="col">
+        <div class="form-group">
             <label class="form-label">严重度</label>
             <select name="severity" class="form-select">
                 {% for s in severities %}<option value="{{ s }}" {% if issue and issue.severity == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
             </select>
         </div>
-        <div class="col">
+        <div class="form-group">
             <label class="form-label">状态</label>
             <select name="status" class="form-select">
                 {% for s in statuses %}<option value="{{ s }}" {% if issue and issue.status == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
             </select>
         </div>
     </div>
-    <div class="mb-3">
+
+    <div class="form-group">
         <label class="form-label">关联制度</label>
         <select name="linked_policy_id" class="form-select">
             <option value="">无</option>
             {% for p in policies %}<option value="{{ p.id }}" {% if issue and issue.linked_policy_id == p.id %}selected{% endif %}>{{ p.title }}</option>{% endfor %}
         </select>
     </div>
-    <div class="mb-3"><label class="form-label">详细描述</label><textarea name="description" class="form-control" rows="4">{{ issue.description if issue else '' }}</textarea></div>
-    <button class="btn btn-primary">保存</button>
-    <a href="{{ url_for('process.list_issues') }}" class="btn btn-outline-secondary">取消</a>
+
+    <div class="form-group">
+        <label class="form-label">详细描述</label>
+        <textarea name="description" class="form-textarea" rows="4">{{ issue.description if issue else '' }}</textarea>
+    </div>
+
+    <div class="form-actions">
+        <button class="btn btn-primary">保存</button>
+        <a href="{{ url_for('process.list_issues') }}" class="btn btn-outline">取消</a>
+    </div>
 </form>
 {% endblock %}

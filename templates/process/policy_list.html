@@ -1,26 +1,36 @@
 {% extends "base.html" %}
 {% block title %}流程制度 — 制度文档{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <ul class="nav nav-tabs">
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('process.list_issues') }}">问题记录</a></li>
-        <li class="nav-item"><a class="nav-link active" href="{{ url_for('process.list_policies') }}">制度文档</a></li>
-    </ul>
+<div class="page-header-row">
+    <div>
+        <h1>流程制度</h1>
+        <p>问题记录与制度文档管理</p>
+    </div>
     <a href="{{ url_for('process.new_policy') }}" class="btn btn-primary">+ 新建制度</a>
 </div>
-<div class="list-group">
+
+<div class="tabs">
+    <a href="{{ url_for('process.list_issues') }}">问题记录</a>
+    <a href="{{ url_for('process.list_policies') }}" class="active">制度文档</a>
+</div>
+
+{% if policies %}
+<div class="policy-list">
     {% for p in policies %}
-    <a href="{{ url_for('process.edit_policy', id=p.id) }}" class="list-group-item list-group-item-action">
-        <div class="d-flex justify-content-between">
-            <div>
-                <h6 class="mb-1">📄 {{ p.title }}</h6>
-                <div class="small text-muted">v{{ p.version }} · 发布于 {{ p.published_at.strftime('%Y-%m-%d') if p.published_at else '' }} · 关联问题: {{ p.issues | length }}个</div>
-            </div>
-            <span class="badge bg-primary rounded-pill">{{ p.issues | length }}</span>
+    <a href="{{ url_for('process.edit_policy', id=p.id) }}" class="policy-item">
+        <div class="policy-info">
+            <h3>📄 {{ p.title }}</h3>
+            <div class="policy-meta">v{{ p.version }} · 发布于 {{ p.published_at.strftime('%Y-%m-%d') if p.published_at else '未发布' }} · 关联问题 {{ p.issues | length }} 个</div>
         </div>
+        <span class="policy-count">{{ p.issues | length }}</span>
     </a>
-    {% else %}
-    <div class="list-group-item text-center text-muted py-4">暂无制度文档</div>
     {% endfor %}
 </div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">📄</div>
+    <div class="empty-text">暂无制度文档</div>
+    <div class="empty-action"><a href="{{ url_for('process.new_policy') }}" class="btn btn-primary">新建制度</a></div>
+</div>
+{% endif %}
 {% endblock %}

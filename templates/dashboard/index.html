@@ -1,71 +1,81 @@
 {% extends "base.html" %}
 {% block title %}仪表盘{% endblock %}
 {% block content %}
-<h2 class="mb-4">管理总览</h2>
-<div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="card text-white bg-primary">
-            <div class="card-body">
-                <div class="small">技术点总数</div>
-                <div class="display-6">{{ tech_point_total }}</div>
-                <div class="small">进行中: {{ in_progress }}</div>
-            </div>
-        </div>
+<div class="page-header">
+    <h1>仪表盘</h1>
+    <p>放射影像算法研究部 · 研发管理总览</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon blue">🔬</div>
+        <div class="stat-value">{{ tech_point_total }}</div>
+        <div class="stat-label">技术点总数</div>
+        <div class="stat-sub">进行中 {{ in_progress }} 个</div>
     </div>
-    <div class="col-md-3">
-        <div class="card text-white bg-success">
-            <div class="card-body">
-                <div class="small">进行中预研</div>
-                <div class="display-6">{{ in_progress }}</div>
-            </div>
-        </div>
+    <div class="stat-card">
+        <div class="stat-icon green">⚡</div>
+        <div class="stat-value">{{ in_progress }}</div>
+        <div class="stat-label">进行中预研</div>
     </div>
-    <div class="col-md-3">
-        <div class="card text-white bg-warning">
-            <div class="card-body">
-                <div class="small">团队人数</div>
-                <div class="display-6">{{ member_total }}</div>
-            </div>
-        </div>
+    <div class="stat-card">
+        <div class="stat-icon amber">👥</div>
+        <div class="stat-value">{{ member_total }}</div>
+        <div class="stat-label">团队成员</div>
     </div>
-    <div class="col-md-3">
-        <div class="card text-white bg-danger">
-            <div class="card-body">
-                <div class="small">待处理问题</div>
-                <div class="display-6">{{ pending_issues }}</div>
-            </div>
-        </div>
+    <div class="stat-card">
+        <div class="stat-icon red">⚠</div>
+        <div class="stat-value">{{ pending_issues }}</div>
+        <div class="stat-label">待处理问题</div>
     </div>
 </div>
-<div class="row g-3">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">最近更新的技术点</div>
-            <ul class="list-group list-group-flush">
-                {% for p in recent_points %}
-                <li class="list-group-item d-flex justify-content-between">
-                    <a href="{{ url_for('business.view_tech_point', id=p.id) }}">{{ p.name }}</a>
-                    <span class="text-muted small">阶段{{ p.current_stage }} · {{ p.updated_at.strftime('%Y-%m-%d') if p.updated_at else '' }}</span>
-                </li>
-                {% else %}
-                <li class="list-group-item text-muted">暂无技术点</li>
-                {% endfor %}
-            </ul>
+
+<div class="two-col">
+    <div class="card-panel">
+        <div class="card-panel-header">最近更新的技术点</div>
+        <div class="card-panel-body">
+            {% if recent_points %}
+            <table class="data-table">
+                <thead><tr><th>技术点</th><th>阶段</th><th>更新时间</th></tr></thead>
+                <tbody>
+                    {% for p in recent_points %}
+                    <tr>
+                        <td><a href="{{ url_for('business.view_tech_point', id=p.id) }}">{{ p.name }}</a></td>
+                        <td><span class="badge badge-info">阶段{{ p.current_stage }}</span></td>
+                        <td class="text-muted text-sm">{{ p.updated_at.strftime('%Y-%m-%d') if p.updated_at else '' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <div class="empty-text">暂无技术点</div>
+            </div>
+            {% endif %}
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">待处理问题</div>
-            <ul class="list-group list-group-flush">
+
+    <div class="card-panel">
+        <div class="card-panel-header">待处理问题</div>
+        <div class="card-panel-body">
+            {% if pending_issue_list %}
                 {% for i in pending_issue_list %}
-                <li class="list-group-item">
-                    <span class="text-{{ 'danger' if i.severity == '高' else 'warning' if i.severity == '中' else 'secondary' }}">●</span>
-                    {{ i.title }}
-                </li>
-                {% else %}
-                <li class="list-group-item text-muted">暂无待处理问题</li>
+                <div class="issue-item">
+                    <div class="issue-dot {{ 'high' if i.severity == '高' else 'medium' if i.severity == '中' else 'low' }}"></div>
+                    <div class="issue-body">
+                        <div class="ititle">{{ i.title }}</div>
+                        <div class="imeta">{{ i.category }} · <span class="{{ 'severity-high' if i.severity == '高' else 'severity-medium' }}">{{ i.severity }}严重度</span></div>
+                    </div>
+                    <span class="badge {{ 'badge-warning' if i.status == '待处理' else 'badge-success' if i.status == '已建制度' else 'badge-secondary' }}">{{ i.status }}</span>
+                </div>
                 {% endfor %}
-            </ul>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">✓</div>
+                <div class="empty-text">暂无待处理问题</div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

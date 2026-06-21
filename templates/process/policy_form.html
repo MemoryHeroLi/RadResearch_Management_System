@@ -1,30 +1,55 @@
 {% extends "base.html" %}
 {% block title %}{{ '编辑' if policy else '新建' }}制度{% endblock %}
 {% block content %}
-<h2 class="mb-4">{{ '编辑' if policy else '新建' }}制度</h2>
+<div class="page-header">
+    <h1>{{ '编辑' if policy else '新建' }}制度</h1>
+    <p>管理部门制度文档</p>
+</div>
+
 <form method="post">
-    <div class="row mb-3">
-        <div class="col-8"><label class="form-label">制度名称 *</label><input type="text" name="title" class="form-control" required value="{{ policy.title if policy else '' }}"></div>
-        <div class="col-4"><label class="form-label">版本</label><input type="text" name="version" class="form-control" value="{{ policy.version if policy else '1.0' }}"></div>
+    <div class="form-row">
+        <div class="form-group" style="grid-column: 1 / -1;">
+            <label class="form-label">制度名称 <span class="required">*</span></label>
+            <input type="text" name="title" class="form-input" required value="{{ policy.title if policy else '' }}">
+        </div>
     </div>
-    <div class="mb-3"><label class="form-label">制度内容</label><textarea name="content" class="form-control" rows="10">{{ policy.content if policy else '' }}</textarea></div>
-    <button class="btn btn-primary">保存</button>
-    <a href="{{ url_for('process.list_policies') }}" class="btn btn-outline-secondary">取消</a>
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label">版本</label>
+            <input type="text" name="version" class="form-input" value="{{ policy.version if policy else '1.0' }}">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">制度内容</label>
+        <textarea name="content" class="form-textarea" rows="10">{{ policy.content if policy else '' }}</textarea>
+    </div>
+
+    <div class="form-actions">
+        <button class="btn btn-primary">保存</button>
+        <a href="{{ url_for('process.list_policies') }}" class="btn btn-outline">取消</a>
+    </div>
 </form>
 
 {% if policy %}
-<div class="mt-4">
-    <h6>关联问题（{{ policy.issues | length }}）</h6>
-    <ul class="list-group">
-        {% for i in policy.issues %}
-        <li class="list-group-item d-flex justify-content-between">
-            <a href="{{ url_for('process.edit_issue', id=i.id) }}">{{ i.title }}</a>
-            <span class="badge bg-{{ 'success' if i.status == '已建制度' else 'warning' }}">{{ i.status }}</span>
-        </li>
+<div class="card-panel mt-4">
+    <div class="card-panel-header">关联问题（{{ policy.issues | length }}）</div>
+    <div class="card-panel-body">
+        {% if policy.issues %}
+            {% for i in policy.issues %}
+            <div class="issue-item">
+                <div class="issue-dot {{ 'high' if i.severity == '高' else 'medium' if i.severity == '中' else 'low' }}"></div>
+                <div class="issue-body">
+                    <div class="ititle"><a href="{{ url_for('process.edit_issue', id=i.id) }}">{{ i.title }}</a></div>
+                    <div class="imeta">{{ i.category }} · {{ i.severity }}严重度</div>
+                </div>
+                <span class="badge {{ 'badge-success' if i.status == '已建制度' else 'badge-warning' }}">{{ i.status }}</span>
+            </div>
+            {% endfor %}
         {% else %}
-        <li class="list-group-item text-muted small">暂无关联问题</li>
-        {% endfor %}
-    </ul>
+        <div class="text-muted text-sm">暂无关联问题</div>
+        {% endif %}
+    </div>
 </div>
 {% endif %}
 {% endblock %}
