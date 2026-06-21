@@ -9,6 +9,8 @@ from blueprints.business.process_template import STANDARD_PROCESS, STAGE_NAMES
 from extensions import db
 from models import TechPoint, StageProgress
 
+DIRECTIONS = ["放射系统功能", "放射图像研究", "放射智能定量", "放射智能应用"]
+
 
 @business_bp.route("/")
 def list_tech_points():
@@ -59,7 +61,7 @@ def new_tech_point():
         db.session.commit()
         flash("技术点已创建", "success")
         return redirect(url_for("business.view_tech_point", id=tp.id))
-    return render_template("business/form.html", point=None, stages=STANDARD_PROCESS)
+    return render_template("business/form.html", point=None, stages=STANDARD_PROCESS, directions=DIRECTIONS)
 
 
 @business_bp.route("/<int:id>")
@@ -113,7 +115,7 @@ def edit_tech_point(id):
         db.session.commit()
         flash("技术点已更新", "success")
         return redirect(url_for("business.view_tech_point", id=tp.id))
-    return render_template("business/form.html", point=tp, stages=STANDARD_PROCESS)
+    return render_template("business/form.html", point=tp, stages=STANDARD_PROCESS, directions=DIRECTIONS)
 
 
 @business_bp.route("/stage/<int:sp_id>/toggle", methods=["POST"])
@@ -163,3 +165,18 @@ def download_doc(doc_id):
         upload_dir, doc.file_path, as_attachment=True,
         download_name=doc.original_name,
     )
+
+
+@business_bp.route("/doc/<int:doc_id>/delete", methods=["POST"])
+def delete_doc(doc_id):
+    from models import StageDocument
+    doc = StageDocument.query.get_or_404(doc_id)
+    tp_id = doc.stage_progress.tech_point_id
+    upload_dir = current_app.config["UPLOAD_FOLDER"]
+    file_path = os.path.join(upload_dir, doc.file_path)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    db.session.delete(doc)
+    db.session.commit()
+    flash("文件已移除", "success")
+    return redirect(url_for("business.view_tech_point", id=tp_id))

@@ -8,7 +8,7 @@ def test_dashboard_index_renders(client, db):
 
 def test_dashboard_shows_counts(client, db):
     from models import TechPoint, Issue
-    db.session.add(TechPoint(name="测试点", direction="CT重建", status="进行中"))
+    db.session.add(TechPoint(name="测试点", direction="放射图像研究", status="进行中"))
     db.session.add(Issue(title="问题1", status="待处理"))
     db.session.commit()
     resp = client.get("/")

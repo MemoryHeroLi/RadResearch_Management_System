@@ -1,12 +1,13 @@
 from datetime import datetime
 from models import (
     TechPoint, StageProgress, StageDocument,
-    Member, CapabilityScore, Issue, Policy,
+    Member, CapabilityScore, CapabilityDimension,
+    Issue, Policy, IssueDocument,
 )
 
 
 def test_create_tech_point(db):
-    tp = TechPoint(name="低剂量CT去噪", direction="CT重建", owner="张三")
+    tp = TechPoint(name="低剂量CT去噪", direction="放射图像研究", owner="张三")
     db.session.add(tp)
     db.session.commit()
     assert tp.id is not None
@@ -16,7 +17,7 @@ def test_create_tech_point(db):
 
 
 def test_tech_point_stage_progress_relation(db):
-    tp = TechPoint(name="MRI伪影校正", direction="MRI")
+    tp = TechPoint(name="MRI伪影校正", direction="放射智能定量")
     db.session.add(tp)
     db.session.commit()
     sp = StageProgress(tech_point_id=tp.id, stage=1, sub_step="需求导入")
@@ -27,7 +28,7 @@ def test_tech_point_stage_progress_relation(db):
 
 
 def test_stage_document_relation(db):
-    tp = TechPoint(name="DR结节检测", direction="DR")
+    tp = TechPoint(name="DR结节检测", direction="放射智能应用")
     db.session.add(tp)
     db.session.commit()
     sp = StageProgress(tech_point_id=tp.id, stage=1, sub_step="需求评审")
@@ -44,13 +45,16 @@ def test_stage_document_relation(db):
 
 
 def test_member_capability_scores(db):
-    m = Member(name="张三", group="CT重建组", level="A")
+    m = Member(name="张三", group="放射图像研究组", level="A",
+               employee_id="RR001", rank="E7")
     db.session.add(m)
     db.session.commit()
     db.session.add(CapabilityScore(member_id=m.id, dimension="算法能力", score=9))
     db.session.commit()
     assert len(m.capability_scores) == 1
     assert m.capability_scores[0].score == 9
+    assert m.employee_id == "RR001"
+    assert m.rank == "E7"
 
 
 def test_issue_policy_relation(db):
@@ -66,7 +70,39 @@ def test_issue_policy_relation(db):
     assert i.policy.title == "文档评审制度"
 
 
+def test_issue_document_relation(db):
+    i = Issue(title="测试问题", category="流程问题", severity="中")
+    db.session.add(i)
+    db.session.commit()
+    doc = IssueDocument(
+        issue_id=i.id, doc_type="证据",
+        file_path="uploads/issue1_evidence.pdf",
+        original_name="evidence.pdf",
+    )
+    db.session.add(doc)
+    db.session.commit()
+    assert len(i.documents) == 1
+    assert i.documents[0].original_name == "evidence.pdf"
+    assert i.documents[0].doc_type == "证据"
+
+
 from blueprints.business.process_template import STANDARD_PROCESS, GATE_STEPS
+
+
+def test_capability_dimension(db):
+    dim = CapabilityDimension(name="团队协作")
+    db.session.add(dim)
+    db.session.commit()
+    assert dim.id is not None
+    assert dim.name == "团队协作"
+    # 名称唯一
+    db.session.add(CapabilityDimension(name="团队协作"))
+    from sqlalchemy.exc import IntegrityError
+    try:
+        db.session.commit()
+        assert False, "应抛出唯一约束异常"
+    except IntegrityError:
+        db.session.rollback()
 
 
 def test_standard_process_has_four_stages():

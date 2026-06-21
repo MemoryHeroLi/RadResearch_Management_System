@@ -6,7 +6,8 @@ from datetime import date
 from start import app
 from extensions import db
 from models import (
-    TechPoint, StageProgress, Member, CapabilityScore, Issue, Policy,
+    TechPoint, StageProgress, Member, CapabilityScore, CapabilityDimension,
+    Issue, Policy,
 )
 from blueprints.business.process_template import STANDARD_PROCESS
 
@@ -18,9 +19,9 @@ def seed():
 
         # 技术点 + 标准流程子步骤
         samples = [
-            ("低剂量CT去噪算法", "CT重建", "张三"),
-            ("MRI运动伪影校正", "MRI", "李四"),
-            ("DR胸部结节检测", "DR", "王五"),
+            ("低剂量CT去噪算法", "放射图像研究", "张三"),
+            ("MRI运动伪影校正", "放射图像研究", "李四"),
+            ("DR胸部结节检测", "放射智能应用", "王五"),
         ]
         for name, direction, owner in samples:
             tp = TechPoint(name=name, direction=direction, owner=owner, current_stage=1)
@@ -33,14 +34,20 @@ def seed():
                     ))
         db.session.commit()
 
-        # 成员 + 能力评分
+        # 能力维度初始化
         dims = ["算法能力", "工程能力", "临床理解", "创新研究", "沟通协作"]
+        for d in dims:
+            db.session.add(CapabilityDimension(name=d))
+        db.session.commit()
+
+        # 成员 + 能力评分
         members = [
-            ("张三", "CT重建组", "高级算法工程师", "A", [9, 8, 7, 6, 8]),
-            ("李四", "MRI组", "算法工程师", "B", [7, 7, 6, 5, 7]),
+            ("张三", "放射图像研究组", "技术经理", "A", "RR001", "E7", [9, 8, 7, 6, 8]),
+            ("李四", "放射图像研究组", "工程师", "B", "RR002", "E5", [7, 7, 6, 5, 7]),
         ]
-        for name, group, title, level, scores in members:
-            m = Member(name=name, group=group, title=title, level=level,
+        for name, group, title, level, employee_id, rank, scores in members:
+            m = Member(name=name, employee_id=employee_id, rank=rank,
+                       group=group, title=title, level=level,
                        skills=",".join(dims[:2]), responsible_for=name,
                        joined_at=date(2023, 3, 1))
             db.session.add(m)

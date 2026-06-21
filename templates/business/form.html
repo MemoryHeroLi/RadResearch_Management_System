@@ -16,7 +16,7 @@
         <div class="form-group">
             <label class="form-label">技术方向 <span class="required">*</span></label>
             <select name="direction" class="form-select" required>
-                {% for d in ['CT重建', 'MRI', 'DR', '超声'] %}
+                {% for d in directions %}
                 <option value="{{ d }}" {% if point and point.direction == d %}selected{% endif %}>{{ d }}</option>
                 {% endfor %}
             </select>

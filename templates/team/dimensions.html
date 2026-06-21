@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}能力维度管理{% endblock %}
+{% block content %}
+<div class="page-header-row">
+    <div>
+        <h1>能力维度管理</h1>
+        <p>管理所有成员的能力评估维度，变更将影响全员</p>
+    </div>
+    <a href="{{ url_for('team.list_members') }}" class="btn btn-outline btn-sm">← 返回团队列表</a>
+</div>
+
+<div class="two-col">
+    <div class="card-panel">
+        <div class="card-panel-header">当前维度（{{ dimensions | length }}）</div>
+        <div class="card-panel-body">
+            {% if dimensions %}
+            <table class="data-table">
+                <thead>
+                    <tr><th>序号</th><th>维度名称</th><th></th></tr>
+                </thead>
+                <tbody>
+                    {% for dim in dimensions %}
+                    <tr>
+                        <td class="text-muted text-sm" style="width:60px;">{{ loop.index }}</td>
+                        <td>{{ dim.name }}</td>
+                        <td style="width:240px;">
+                            <form method="post" action="{{ url_for('team.delete_dimension', dim_id=dim.id) }}" class="flex-center gap-2">
+                                <input type="text" name="confirm_name" class="form-input" placeholder="输入「{{ dim.name }}」确认" required style="font-size:12px;padding:4px 8px;">
+                                <button class="btn btn-sm" style="color:var(--color-destructive);border-color:var(--color-destructive);" onclick="return confirm('删除后将清除所有成员该维度的评分，确认删除？')">删除</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📊</div>
+                <div class="empty-text">暂无评估维度</div>
+                <div class="empty-action" style="font-size:13px;color:var(--color-fg-muted);">在下方添加第一个维度</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div>
+        <div class="card-panel">
+            <div class="card-panel-header">添加新维度</div>
+            <div class="card-panel-body">
+                <form method="post" action="{{ url_for('team.add_dimension') }}">
+                    <div class="form-group">
+                        <label class="form-label">维度名称</label>
+                        <input type="text" name="name" class="form-input" placeholder="如: 项目管理、代码质量" required>
+                    </div>
+                    <button class="btn btn-primary">添加维度</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card-panel mt-4">
+            <div class="card-panel-header" style="color:var(--color-warning);">注意事项</div>
+            <div class="card-panel-body text-sm text-muted">
+                <ul style="padding-left:18px;line-height:2;">
+                    <li>删除维度将<strong style="color:var(--color-destructive);">同时清除所有成员</strong>该维度的历史评分数据</li>
+                    <li>删除操作不可撤销，请输入完整维度名称确认</li>
+                    <li>添加新维度后，每个成员可独立为该维度打分</li>
+                    <li>维度变更立即在所有成员的雷达图中生效</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

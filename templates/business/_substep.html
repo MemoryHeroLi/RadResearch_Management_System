@@ -15,8 +15,11 @@
     <div class="substep-notes">{{ sp.notes }}</div>
     {% endif %}
     {% for doc in sp.documents %}
-    <div class="substep-docs">
+    <div class="substep-docs flex-between">
         <a href="{{ url_for('business.download_doc', doc_id=doc.id) }}">📎 {{ doc.original_name }}</a>
+        <form method="post" action="{{ url_for('business.delete_doc', doc_id=doc.id) }}" style="display:inline;">
+            <button class="btn btn-sm" style="color:var(--color-destructive);font-size:10px;padding:0 4px;border:none;background:none;cursor:pointer;" onclick="return confirm('确认移除该文件？')" title="移除">✕</button>
+        </form>
     </div>
     {% endfor %}
     <form method="post" action="{{ url_for('business.upload_doc', sp_id=sp.id) }}" enctype="multipart/form-data" class="substep-upload">

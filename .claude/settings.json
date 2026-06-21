@@ -50,7 +50,12 @@
       "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" \"C:\\\\Users\\\\92169\\\\.claude\\\\plugins\\\\cache\\\\ui-ux-pro-max-skill\\\\ui-ux-pro-max\\\\2.5.0\\\\src\\\\ui-ux-pro-max\\\\scripts\\\\search.py\" \"modern professional clean dashboard\" --domain style -n 3)",
       "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" \"C:\\\\Users\\\\92169\\\\.claude\\\\plugins\\\\cache\\\\ui-ux-pro-max-skill\\\\ui-ux-pro-max\\\\2.5.0\\\\src\\\\ui-ux-pro-max\\\\scripts\\\\search.py\" \"dashboard kanban chart\" --stack html-tailwind -n 5)",
       "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -c \"from start import create_app; app = create_app\\(\\); print\\('App created successfully'\\); print\\('Blueprints:', [bp.name for bp in app.blueprints.values\\(\\)]\\); print\\('Routes:'\\); [print\\(f'  {rule.rule} -> {rule.endpoint}'\\) for rule in app.url_map.iter_rules\\(\\) if not rule.rule.startswith\\('/static'\\)]\")",
-      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/ -v --tb=short)"
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/ -v --tb=short)",
+      "Bash(git push *)",
+      "Bash(GIT_SSL_NO_VERIFY=1 git push origin main)",
+      "Bash(rm -f rad_research.db)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -c \"from start import create_app; app = create_app\\(\\); print\\('App OK'\\); print\\('Blueprints:', [bp.name for bp in app.blueprints.values\\(\\)]\\); [print\\(f'  {rule.rule} -> {rule.endpoint}'\\) for rule in app.url_map.iter_rules\\(\\) if not rule.rule.startswith\\('/static'\\)]\")",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -c \"from start import create_app; app = create_app\\(\\); print\\('App OK'\\); [print\\(f'  {r.rule} -> {r.endpoint}'\\) for r in app.url_map.iter_rules\\(\\) if not r.rule.startswith\\('/static'\\)]\")"
     ]
   }
 }

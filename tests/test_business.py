@@ -7,7 +7,7 @@ def test_list_tech_points_empty(client, db):
 def test_create_tech_point_auto_generates_stage_progress(client, db):
     resp = client.post("/business/new", data={
         "name": "低剂量CT去噪",
-        "direction": "CT重建",
+        "direction": "放射图像研究",
         "owner": "张三",
         "status": "进行中",
         "source": "临床反馈",
@@ -28,8 +28,8 @@ def test_create_tech_point_auto_generates_stage_progress(client, db):
 
 def test_filter_tech_points_by_stage(client, db):
     from models import TechPoint
-    db.session.add(TechPoint(name="A", direction="CT重建", current_stage=1, status="进行中"))
-    db.session.add(TechPoint(name="B", direction="MRI", current_stage=3, status="进行中"))
+    db.session.add(TechPoint(name="A", direction="放射图像研究", current_stage=1, status="进行中"))
+    db.session.add(TechPoint(name="B", direction="放射智能定量", current_stage=3, status="进行中"))
     db.session.commit()
     resp = client.get("/business?stage=3")
     assert b"B" in resp.data
@@ -38,7 +38,7 @@ def test_filter_tech_points_by_stage(client, db):
 
 def test_view_tech_point_kanban(client, db):
     from models import TechPoint
-    tp = TechPoint(name="看板测试", direction="CT重建", current_stage=1)
+    tp = TechPoint(name="看板测试", direction="放射图像研究", current_stage=1)
     db.session.add(tp)
     db.session.flush()
     from blueprints.business.process_template import STANDARD_PROCESS
@@ -58,7 +58,7 @@ def test_view_tech_point_kanban(client, db):
 
 def test_toggle_substep_completion(client, db):
     from models import TechPoint, StageProgress
-    tp = TechPoint(name="切换测试", direction="CT重建")
+    tp = TechPoint(name="切换测试", direction="放射图像研究")
     db.session.add(tp)
     db.session.commit()
     sp = StageProgress(tech_point_id=tp.id, stage=1, sub_step="需求导入")
@@ -76,7 +76,7 @@ import io
 
 def test_upload_and_download_document(client, db, app):
     from models import TechPoint, StageProgress
-    tp = TechPoint(name="上传测试", direction="CT重建")
+    tp = TechPoint(name="上传测试", direction="放射图像研究")
     db.session.add(tp)
     db.session.commit()
     sp = StageProgress(tech_point_id=tp.id, stage=1, sub_step="需求评审")
@@ -103,3 +103,38 @@ def test_upload_and_download_document(client, db, app):
     resp = client.get(f"/business/doc/{doc.id}/download")
     assert resp.status_code == 200
     assert b"fake pdf content" in resp.data
+
+
+def test_delete_document(client, db, app):
+    from models import TechPoint, StageProgress, StageDocument
+    import os
+    tp = TechPoint(name="删除测试", direction="放射图像研究")
+    db.session.add(tp)
+    db.session.commit()
+    sp = StageProgress(tech_point_id=tp.id, stage=1, sub_step="需求评审")
+    db.session.add(sp)
+    db.session.commit()
+
+    # 上传文件
+    data = {
+        "file": (io.BytesIO(b"content to delete"), "delete_me.pdf"),
+        "doc_type": "测试",
+    }
+    resp = client.post(
+        f"/business/stage/{sp.id}/upload", data=data,
+        content_type="multipart/form-data", follow_redirects=True,
+    )
+    assert resp.status_code == 200
+    doc = StageDocument.query.first()
+    assert doc is not None
+
+    # 确认磁盘文件存在
+    upload_dir = app.config["UPLOAD_FOLDER"]
+    disk_path = os.path.join(upload_dir, doc.file_path)
+    assert os.path.exists(disk_path)
+
+    # 删除
+    resp = client.post(f"/business/doc/{doc.id}/delete", follow_redirects=True)
+    assert resp.status_code == 200
+    assert StageDocument.query.count() == 0
+    assert not os.path.exists(disk_path)

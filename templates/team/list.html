@@ -30,7 +30,12 @@
             <div class="member-name">{{ m.name }}</div>
             <span class="member-level {{ m.level | lower if m.level else 'b' }}">{{ m.level }}级</span>
         </div>
-        <div class="text-sm text-muted mb-2">{{ m.group or '-' }} · {{ m.title or '-' }}</div>
+        <div class="text-sm text-muted mb-2">
+            {{ m.group or '-' }} · {{ m.title or '-' }}
+            {% if m.title == '技术经理' %}<span class="manager-badge">技术经理</span>{% endif %}
+            {% if m.employee_id %}<br>工号: {{ m.employee_id }}{% endif %}
+            {% if m.rank %} · 职级: {{ m.rank }}{% endif %}
+        </div>
         {% if m.skills %}
         <div class="member-tags">
             {% for sk in m.skills.split(',') %}
@@ -41,7 +46,8 @@
         {% if m.responsible_for %}
         <div class="member-footer">负责: {{ m.responsible_for }}</div>
         {% endif %}
-        <a href="{{ url_for('team.view_member', id=m.id) }}" class="btn btn-outline btn-sm mt-3" style="width:100%;">查看雷达图 →</a>
+        <a href="{{ url_for('team.view_member', id=m.id) }}" class="btn btn-outline btn-sm mt-3">查看雷达图 →</a>
+        <a href="{{ url_for('team.edit_member', id=m.id) }}" class="btn btn-outline btn-sm mt-3">编辑</a>
     </div>
     {% endfor %}
 </div>

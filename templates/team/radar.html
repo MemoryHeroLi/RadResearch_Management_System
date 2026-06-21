@@ -4,9 +4,17 @@
 <div class="page-header-row">
     <div>
         <h1>{{ member.name }}</h1>
-        <p>{{ member.group or '-' }} · {{ member.title or '-' }}</p>
+        <p>
+            {{ member.group or '-' }} · {{ member.title or '-' }}
+            {% if member.title == '技术经理' %}<span class="manager-badge">技术经理</span>{% endif %}
+            {% if member.employee_id %} · 工号: {{ member.employee_id }}{% endif %}
+            {% if member.rank %} · 职级: {{ member.rank }}{% endif %}
+        </p>
     </div>
-    <span class="badge badge-lg {{ 'badge-success' if member.level == 'A' else 'badge-warning' if member.level == 'B' else 'badge-secondary' }}">{{ member.level }}级</span>
+    <div class="flex-center gap-3">
+        <a href="{{ url_for('team.edit_member', id=member.id) }}" class="btn btn-outline btn-sm">编辑</a>
+        <span class="badge badge-lg {{ 'badge-success' if member.level == 'A' else 'badge-warning' if member.level == 'B' else 'badge-secondary' }}">{{ member.level }}级</span>
+    </div>
 </div>
 
 {% if member.skills %}
@@ -28,12 +36,12 @@
             <form method="post" action="{{ url_for('team.edit_score', id=member.id) }}">
                 {% for dim in dimensions %}
                 <div class="range-group">
-                    <label>{{ dim }}</label>
+                    <label>{{ dim.name }}</label>
                     <div class="range-row">
-                        <input type="range" name="{{ dim }}" min="0" max="10"
-                               value="{{ scores.get(dim, 0) }}"
+                        <input type="range" name="{{ dim.name }}" min="0" max="10"
+                               value="{{ scores.get(dim.name, 0) }}"
                                oninput="this.nextElementSibling.textContent=this.value">
-                        <span class="range-value">{{ scores.get(dim, 0) }}</span>
+                        <span class="range-value">{{ scores.get(dim.name, 0) }}</span>
                     </div>
                 </div>
                 {% endfor %}
@@ -50,6 +58,10 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="mt-4" style="text-align:right;">
+    <a href="{{ url_for('team.manage_dimensions') }}" class="btn btn-outline btn-sm">⚙ 管理评估维度</a>
 </div>
 {% endblock %}
 

@@ -14,6 +14,17 @@
 
     <div class="form-row">
         <div class="form-group">
+            <label class="form-label">工号</label>
+            <input type="text" name="employee_id" class="form-input" value="{{ member.employee_id if member else '' }}" placeholder="如: RR001">
+        </div>
+        <div class="form-group">
+            <label class="form-label">职级</label>
+            <input type="text" name="rank" class="form-input" value="{{ member.rank if member else '' }}" placeholder="如: E7, E10">
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
             <label class="form-label">所属组</label>
             <select name="group" class="form-select">
                 <option value="">-</option>
@@ -30,7 +41,10 @@
 
     <div class="form-group">
         <label class="form-label">职位</label>
-        <input type="text" name="title" class="form-input" value="{{ member.title if member else '' }}">
+        <select name="title" class="form-select">
+            <option value="">-</option>
+            {% for t in titles %}<option value="{{ t }}" {% if member and member.title == t %}selected{% endif %}>{{ t }}</option>{% endfor %}
+        </select>
     </div>
 
     <div class="form-group">

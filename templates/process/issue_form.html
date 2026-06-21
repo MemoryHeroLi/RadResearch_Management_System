@@ -51,4 +51,32 @@
         <a href="{{ url_for('process.list_issues') }}" class="btn btn-outline">取消</a>
     </div>
 </form>
+
+{% if issue %}
+<div class="card-panel mt-4">
+    <div class="card-panel-header">附件</div>
+    <div class="card-panel-body">
+        {% if issue.documents %}
+        <div class="mb-3">
+            {% for doc in issue.documents %}
+            <div class="flex-between mb-1">
+                <a href="{{ url_for('process.download_issue_doc', doc_id=doc.id) }}">📎 {{ doc.original_name }}</a>
+                <div class="flex-center gap-2">
+                    <span class="text-sm text-muted">{% if doc.doc_type %}{{ doc.doc_type }} · {% endif %}{{ doc.uploaded_at.strftime('%Y-%m-%d') if doc.uploaded_at else '' }}</span>
+                    <form method="post" action="{{ url_for('process.delete_issue_doc', doc_id=doc.id) }}" style="display:inline;">
+                        <button style="color:var(--color-destructive);font-size:12px;padding:0 4px;border:none;background:none;cursor:pointer;" onclick="return confirm('确认移除该附件？')" title="移除">✕</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <form method="post" action="{{ url_for('process.upload_issue_doc', id=issue.id) }}" enctype="multipart/form-data" class="flex-center gap-3">
+            <input type="file" name="file" required>
+            <input type="text" name="doc_type" class="form-input" placeholder="文档类型（可选）" style="max-width:200px;">
+            <button class="btn btn-primary btn-sm">上传</button>
+        </form>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

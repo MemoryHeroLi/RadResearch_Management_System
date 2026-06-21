@@ -66,3 +66,71 @@ def test_create_policy_and_view_linked_issues(client, db):
     resp = client.get(f"/process/policies/{p.id}")
     assert resp.status_code == 200
     assert "评审不及时" in resp.data.decode()
+
+
+import io
+
+
+def test_upload_issue_document(client, db, app):
+    from models import Issue
+    i = Issue(title="测试问题", category="流程问题", severity="中")
+    db.session.add(i)
+    db.session.commit()
+
+    data = {
+        "file": (io.BytesIO(b"fake issue attachment"), "evidence.pdf"),
+        "doc_type": "证据材料",
+    }
+    resp = client.post(
+        f"/process/issues/{i.id}/upload", data=data,
+        content_type="multipart/form-data", follow_redirects=True,
+    )
+    assert resp.status_code == 200
+
+    from models import IssueDocument
+    doc = IssueDocument.query.first()
+    assert doc is not None
+    assert doc.original_name == "evidence.pdf"
+    assert doc.issue_id == i.id
+    assert doc.doc_type == "证据材料"
+
+    # 下载
+    resp = client.get(f"/process/issue_doc/{doc.id}/download")
+    assert resp.status_code == 200
+    assert b"fake issue attachment" in resp.data
+
+    # 问题编辑页应显示附件
+    resp = client.get(f"/process/issues/{i.id}")
+    assert resp.status_code == 200
+
+
+def test_delete_issue_document(client, db, app):
+    from models import Issue, IssueDocument
+    import os
+    i = Issue(title="删除测试问题", category="流程问题", severity="中")
+    db.session.add(i)
+    db.session.commit()
+
+    # 上传附件
+    data = {
+        "file": (io.BytesIO(b"issue content to delete"), "delete_issue.pdf"),
+        "doc_type": "测试附件",
+    }
+    resp = client.post(
+        f"/process/issues/{i.id}/upload", data=data,
+        content_type="multipart/form-data", follow_redirects=True,
+    )
+    assert resp.status_code == 200
+    doc = IssueDocument.query.first()
+    assert doc is not None
+
+    # 确认磁盘文件存在
+    upload_dir = app.config["UPLOAD_FOLDER"]
+    disk_path = os.path.join(upload_dir, doc.file_path)
+    assert os.path.exists(disk_path)
+
+    # 删除
+    resp = client.post(f"/process/issue_doc/{doc.id}/delete", follow_redirects=True)
+    assert resp.status_code == 200
+    assert IssueDocument.query.count() == 0
+    assert not os.path.exists(disk_path)

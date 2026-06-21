@@ -54,6 +54,8 @@ class Member(db.Model):
     __tablename__ = "member"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
+    employee_id = db.Column(db.String(20))
+    rank = db.Column(db.String(20))
     group = db.Column(db.String(50))
     title = db.Column(db.String(50))
     level = db.Column(db.String(10))
@@ -62,8 +64,15 @@ class Member(db.Model):
     joined_at = db.Column(db.Date)
 
 
+class CapabilityDimension(db.Model):
+    """能力评估维度"""
+    __tablename__ = "capability_dimension"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False, unique=True)
+
+
 class CapabilityScore(db.Model):
-    """能力评分——5个评估维度"""
+    """能力评分——按维度评分"""
     __tablename__ = "capability_score"
     id = db.Column(db.Integer, primary_key=True)
     member_id = db.Column(
@@ -100,3 +109,17 @@ class Issue(db.Model):
     description = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     policy = db.relationship("Policy", backref="issues")
+
+
+class IssueDocument(db.Model):
+    """问题附件——关联 Issue 的文档/材料"""
+    __tablename__ = "issue_document"
+    id = db.Column(db.Integer, primary_key=True)
+    issue_id = db.Column(
+        db.Integer, db.ForeignKey("issue.id"), nullable=False
+    )
+    doc_type = db.Column(db.String(50))
+    file_path = db.Column(db.String(500))
+    original_name = db.Column(db.String(200))
+    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+    issue = db.relationship("Issue", backref="documents")
