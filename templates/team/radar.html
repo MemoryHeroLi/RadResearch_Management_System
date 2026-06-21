@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ member.name }}{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-5">
+        <h2>{{ member.name }}
+            <span class="badge bg-{{ 'success' if member.level == 'A' else 'warning' if member.level == 'B' else 'secondary' }}">{{ member.level }}级</span>
+        </h2>
+        <div class="text-muted mb-2">{{ member.group or '-' }} · {{ member.title or '-' }}</div>
+        {% if member.skills %}
+        <div class="mb-2">
+            {% for sk in member.skills.split(',') %}<span class="badge bg-info text-dark">{{ sk.strip() }}</span>{% endfor %}
+        </div>
+        {% endif %}
+        {% if member.responsible_for %}<div class="small">负责: {{ member.responsible_for }}</div>{% endif %}
+
+        <h6 class="mt-4 mb-2">能力评分</h6>
+        <form method="post" action="{{ url_for('team.edit_score', id=member.id) }}">
+            {% for dim in dimensions %}
+            <div class="mb-2">
+                <label class="form-label small mb-1">{{ dim }}</label>
+                <input type="range" class="form-range" name="{{ dim }}" min="0" max="10"
+                       value="{{ scores.get(dim, 0) }}"
+                       oninput="this.nextElementSibling.textContent=this.value">
+                <span class="small text-muted">{{ scores.get(dim, 0) }}</span>
+            </div>
+            {% endfor %}
+            <button class="btn btn-primary btn-sm">保存评分</button>
+        </form>
+    </div>
+    <div class="col-md-7">
+        <div class="radar-container">
+            <canvas id="radarChart"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const ctx = document.getElementById('radarChart');
+new Chart(ctx, {
+    type: 'radar',
+    data: {
+        labels: {{ chart_labels | tojson }},
+        datasets: [{
+            label: '能力评估',
+            data: {{ chart_values | tojson }},
+            fill: true,
+            backgroundColor: 'rgba(13,110,253,0.2)',
+            borderColor: 'rgb(13,110,253)',
+            pointBackgroundColor: 'rgb(13,110,253)',
+        }]
+    },
+    options: {
+        scales: { r: { beginAtZero: true, max: 10, suggestedMin: 0 } }
+    }
+});
+</script>
+{% endblock %}

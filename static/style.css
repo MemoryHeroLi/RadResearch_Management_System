@@ -1,0 +1,50 @@
+/* 看板列 */
+.kanban-board {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+}
+.kanban-column {
+    min-width: 260px;
+    flex-shrink: 0;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 0.75rem;
+}
+.kanban-column.current {
+    border: 2px solid #0d6efd;
+    background: #f0f7ff;
+}
+.kanban-column.locked {
+    opacity: 0.5;
+}
+.substep-card {
+    background: #fff;
+    border-radius: 4px;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+}
+.substep-card.completed {
+    border-left: 3px solid #198754;
+}
+.substep-card.pending {
+    border-left: 3px solid #ffc107;
+}
+.substep-card.todo {
+    border-left: 3px solid #dee2e6;
+}
+.gate-badge {
+    background: #dc3545;
+    color: #fff;
+    font-size: 0.65rem;
+    padding: 1px 5px;
+    border-radius: 8px;
+    margin-left: 4px;
+}
+/* 雷达图容器 */
+.radar-container {
+    max-width: 400px;
+    margin: 0 auto;
+}

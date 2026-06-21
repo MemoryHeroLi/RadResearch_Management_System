@@ -1,0 +1,6 @@
+.superpowers/
+__pycache__/
+*.pyc
+rad_research.db
+uploads/
+.pytest_cache/

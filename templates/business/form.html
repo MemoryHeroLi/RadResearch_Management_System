@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ '编辑' if point else '新增' }}技术点{% endblock %}
+{% block content %}
+<h2 class="mb-4">{{ '编辑' if point else '新增' }}技术点</h2>
+<form method="post">
+    <div class="mb-3">
+        <label class="form-label">技术点名称 *</label>
+        <input type="text" name="name" class="form-control" required value="{{ point.name if point else '' }}">
+    </div>
+    <div class="row mb-3">
+        <div class="col">
+            <label class="form-label">技术方向 *</label>
+            <select name="direction" class="form-select" required>
+                {% for d in ['CT重建', 'MRI', 'DR', '超声'] %}
+                <option value="{{ d }}" {% if point and point.direction == d %}selected{% endif %}>{{ d }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <label class="form-label">状态</label>
+            <select name="status" class="form-select">
+                {% for st in ['进行中', '已完成', '暂停'] %}
+                <option value="{{ st }}" {% if point and point.status == st %}selected{% endif %}>{{ st }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">负责人</label>
+        <input type="text" name="owner" class="form-control" value="{{ point.owner if point else '' }}">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">需求来源</label>
+        <input type="text" name="source" class="form-control" value="{{ point.source if point else '' }}">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">详细描述</label>
+        <textarea name="description" class="form-control" rows="4">{{ point.description if point else '' }}</textarea>
+    </div>
+    <button class="btn btn-primary">保存</button>
+    <a href="{{ url_for('business.list_tech_points') }}" class="btn btn-outline-secondary">取消</a>
+</form>
+{% if not point %}
+<div class="alert alert-info mt-3 small">
+    新建后将按标准预研流程自动生成 4 个阶段、共 22 个子步骤的跟踪记录。
+</div>
+{% endif %}
+{% endblock %}

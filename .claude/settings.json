@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\".claude/skills/brainstorming/scripts/start-server.sh\" --project-dir \"e:\\\\Projects\\\\RadResearch_Management_System\")",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" --version)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -c \"import flask, flask_sqlalchemy; print\\('Flask', flask.__version__\\); print\\('Flask-SQLAlchemy', flask_sqlalchemy.__version__\\)\")",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -c \"import pytest; print\\('pytest', pytest.__version__\\)\")",
+      "Bash(git init *)",
+      "Bash(git config *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/conftest.py --collect-only -q)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_models.py -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_models.py::test_tech_point_stage_progress_relation -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_models.py::test_standard_process_has_four_stages -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -c \"import start; print\\('OK', len\\(list\\(start.app.url_map.iter_rules\\(\\)\\)\\)\\)\")",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_dashboard.py -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_dashboard.py::test_dashboard_shows_counts -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_business.py -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_business.py tests/test_dashboard.py -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_business.py::test_view_tech_point_kanban tests/test_business.py::test_toggle_substep_completion -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_business.py::test_upload_and_download_document -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_team.py -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_team.py::test_view_member_radar -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_team.py --collect-only)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_team.py::test_view_member_radar tests/test_team.py::test_edit_member_score -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_process.py -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_process.py::test_create_policy_and_view_linked_issues -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/ -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" seed.py)",
+      "Bash('D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe' -c ' *)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" start.py)",
+      "Bash(curl -s -o /dev/null -w \"仪表盘 / : %{http_code}\\\\n\" http://127.0.0.1:5000/)",
+      "Bash(curl -s -o /dev/null -w \"业务管理 /business : %{http_code}\\\\n\" http://127.0.0.1:5000/business)",
+      "Bash(curl -s -o /dev/null -w \"团队管理 /team : %{http_code}\\\\n\" http://127.0.0.1:5000/team)",
+      "Bash(curl -s -o /dev/null -w \"流程制度 /process/issues : %{http_code}\\\\n\" http://127.0.0.1:5000/process/issues)",
+      "Bash(curl -s http://127.0.0.1:5000/business/1)",
+      "Bash(taskkill //F //IM python.exe)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/)"
+    ]
+  }
+}

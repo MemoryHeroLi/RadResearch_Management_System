@@ -1,0 +1,25 @@
+<div class="substep-card {{ 'completed' if sp.is_completed else 'todo' }}">
+    <div class="d-flex justify-content-between align-items-start">
+        <div>
+            <strong>{{ sp.sub_step }}</strong>
+            {% if sp.sub_step in gate_steps %}<span class="gate-badge">关卡</span>{% endif %}
+            {% if sp.is_completed %}
+            <div class="text-muted small">完成于 {{ sp.completed_at.strftime('%Y-%m-%d') if sp.completed_at else '' }}</div>
+            {% endif %}
+            {% if sp.notes %}<div class="small mt-1">{{ sp.notes }}</div>{% endif %}
+            {% for doc in sp.documents %}
+            <div class="small"><a href="{{ url_for('business.download_doc', doc_id=doc.id) }}">📎 {{ doc.original_name }}</a></div>
+            {% endfor %}
+        </div>
+        <form method="post" action="{{ url_for('business.toggle_substep', sp_id=sp.id) }}">
+            <input type="checkbox" class="form-check-input" onchange="this.form.submit()" {% if sp.is_completed %}checked{% endif %}>
+        </form>
+    </div>
+    <form method="post" action="{{ url_for('business.upload_doc', sp_id=sp.id) }}" enctype="multipart/form-data" class="mt-2">
+        <div class="input-group input-group-sm">
+            <input type="file" name="file" class="form-control" required>
+            <input type="text" name="doc_type" class="form-control" placeholder="类型(评审材料/会议纪要/PPT)" style="max-width:140px">
+            <button class="btn btn-outline-primary">上传</button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}仪表盘{% endblock %}
+{% block content %}
+<h2 class="mb-4">管理总览</h2>
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="small">技术点总数</div>
+                <div class="display-6">{{ tech_point_total }}</div>
+                <div class="small">进行中: {{ in_progress }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="small">进行中预研</div>
+                <div class="display-6">{{ in_progress }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="small">团队人数</div>
+                <div class="display-6">{{ member_total }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-danger">
+            <div class="card-body">
+                <div class="small">待处理问题</div>
+                <div class="display-6">{{ pending_issues }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row g-3">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">最近更新的技术点</div>
+            <ul class="list-group list-group-flush">
+                {% for p in recent_points %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <a href="{{ url_for('business.view_tech_point', id=p.id) }}">{{ p.name }}</a>
+                    <span class="text-muted small">阶段{{ p.current_stage }} · {{ p.updated_at.strftime('%Y-%m-%d') if p.updated_at else '' }}</span>
+                </li>
+                {% else %}
+                <li class="list-group-item text-muted">暂无技术点</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">待处理问题</div>
+            <ul class="list-group list-group-flush">
+                {% for i in pending_issue_list %}
+                <li class="list-group-item">
+                    <span class="text-{{ 'danger' if i.severity == '高' else 'warning' if i.severity == '中' else 'secondary' }}">●</span>
+                    {{ i.title }}
+                </li>
+                {% else %}
+                <li class="list-group-item text-muted">暂无待处理问题</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
