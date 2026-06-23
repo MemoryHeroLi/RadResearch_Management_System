@@ -230,3 +230,27 @@ def test_edit_tech_point_form_has_member_select(client, db):
     assert "王五" in html
     # 不应是 input
     assert '<input type="text" name="owner"' not in html
+
+
+def test_member_card_has_data_attributes(client, db):
+    """成员卡片应包含完整的 data-member-* 属性，且模态框结构存在"""
+    from models import Member
+    db.session.add(Member(
+        name="张三", employee_id="E001", rank="P7",
+        group="放射图像研究组", title="工程师", level="A",
+        skills="Python,C++", responsible_for="CT图像重建",
+    ))
+    db.session.commit()
+
+    resp = client.get("/team/")
+    assert resp.status_code == 200
+    html = resp.data.decode()
+    # 模态框结构应存在
+    assert 'id="member-modal"' in html
+    assert 'class="modal-overlay"' in html
+    # 卡片应包含 data 属性
+    assert 'data-member-name="张三"' in html
+    assert 'data-member-employee-id="E001"' in html
+    assert 'data-member-group="放射图像研究组"' in html
+    # 卡片应有点击处理
+    assert "onclick=\"openMemberModal(this)\"" in html

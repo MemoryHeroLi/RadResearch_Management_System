@@ -638,6 +638,56 @@ code, .mono { font-family: 'Fira Code', 'Cascadia Code', monospace; font-size: .
 }
 
 /* ── Reduced Motion ── */
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.modal-dialog {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-modal);
+  max-width: 480px; width: 100%;
+  max-height: 85vh; overflow-y: auto;
+}
+.modal-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+.modal-header h2 { font-size: 18px; font-weight: 700; }
+.modal-close {
+  background: none; border: none;
+  font-size: 24px; color: var(--color-fg-muted); cursor: pointer;
+  line-height: 1; padding: 0 4px;
+  transition: color var(--transition-fast);
+}
+.modal-close:hover { color: var(--color-fg); }
+.modal-body { padding: 16px 24px 24px; }
+.modal-detail-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0; border-bottom: 1px solid var(--color-border);
+  font-size: 14px;
+}
+.modal-detail-label {
+  font-weight: 600; color: var(--color-fg-secondary);
+  min-width: 80px;
+}
+.modal-scores { margin-top: 8px; }
+.modal-score-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 12px; background: var(--color-muted);
+  border-radius: var(--radius-sm); margin-bottom: 4px;
+  font-size: 13px;
+}
+.modal-score-val {
+  font-weight: 700; color: var(--color-primary);
+}
+
+/* ── Reduced Motion ── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
