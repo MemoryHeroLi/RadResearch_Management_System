@@ -1,0 +1,50 @@
+{% if members %}
+<div class="member-grid">
+    {% for m in members %}
+    <div class="member-card"
+         onclick="openMemberModal(this)"
+         data-member-name="{{ m.name }}"
+         data-member-employee-id="{{ m.employee_id or '' }}"
+         data-member-rank="{{ m.rank or '' }}"
+         data-member-group="{{ m.group or '' }}"
+         data-member-title="{{ m.title or '' }}"
+         data-member-level="{{ m.level or '' }}"
+         data-member-skills="{{ m.skills or '' }}"
+         data-member-responsible-for="{{ m.responsible_for or '' }}"
+         data-member-joined-at="{{ m.joined_at.strftime('%Y-%m-%d') if m.joined_at else '' }}"
+         data-member-avatar-color="{{ ['#0891B2','#7C3AED','#059669','#D97706','#0284C7','#DC2626','#475569','#BE185D'][loop.index0 % 8] }}"
+         data-member-scores="{{ m.capability_scores | map(attribute='dimension') | join(',') }}"
+         data-member-score-values="{{ m.capability_scores | map(attribute='score') | join(',') }}"
+         style="cursor:pointer">
+        <div class="member-header">
+            <div class="member-avatar" style="background:{{ ['#0891B2','#7C3AED','#059669','#D97706','#0284C7','#DC2626','#475569','#BE185D'][loop.index0 % 8] }};">{{ m.name[0] }}</div>
+            <div class="member-name">{{ m.name }}</div>
+            <span class="member-level {{ m.level | lower if m.level else 'b' }}">{{ m.level }}级</span>
+        </div>
+        <div class="text-sm text-muted mb-2">
+            {{ m.group or '-' }} · {{ m.title or '-' }}
+            {% if m.title == '技术经理' %}<span class="manager-badge">技术经理</span>{% endif %}
+            {% if m.employee_id %}<br>工号: {{ m.employee_id }}{% endif %}
+            {% if m.rank %} · 职级: {{ m.rank }}{% endif %}
+        </div>
+        {% if m.skills %}
+        <div class="member-tags">
+            {% for sk in m.skills.split(',') %}
+            <span class="badge badge-info">{{ sk.strip() }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if m.responsible_for %}
+        <div class="member-footer">负责: {{ m.responsible_for }}</div>
+        {% endif %}
+        <a href="{{ url_for('team.view_member', id=m.id) }}" class="btn btn-outline btn-sm mt-3" onclick="event.stopPropagation()">查看雷达图 →</a>
+        <a href="{{ url_for('team.edit_member', id=m.id) }}" class="btn btn-outline btn-sm mt-3" onclick="event.stopPropagation()">编辑</a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">👥</div>
+    <div class="empty-text">暂无成员</div>
+</div>
+{% endif %}

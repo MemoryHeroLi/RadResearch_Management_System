@@ -291,3 +291,39 @@ def test_list_issues_ajax_filter(client, db):
     html = resp.data.decode()
     assert "流程问题A" in html
     assert "质量问题B" not in html
+
+
+def test_list_members_ajax_returns_fragment(client, db):
+    """团队管理 AJAX 请求应只返回成员列表片段，不含完整页面结构"""
+    from models import Member
+    db.session.add(Member(name="张三", group="放射图像研究组", level="A"))
+    db.session.add(Member(name="李四", group="放射系统功能组", level="B"))
+    db.session.commit()
+
+    # 普通请求应返回完整页面
+    resp = client.get("/team/")
+    assert resp.status_code == 200
+    html = resp.data.decode()
+    assert "团队管理" in html
+
+    # AJAX 请求应只返回成员列表片段
+    resp_ajax = client.get("/team/", headers={"X-Requested-With": "XMLHttpRequest"})
+    assert resp_ajax.status_code == 200
+    html_ajax = resp_ajax.data.decode()
+    assert "团队管理" not in html_ajax
+    assert "member-grid" in html_ajax or "empty-state" in html_ajax
+
+
+def test_list_members_ajax_filter(client, db):
+    """团队管理 AJAX 筛选应返回正确的筛选结果"""
+    from models import Member
+    db.session.add(Member(name="张三", group="放射图像研究组", level="A"))
+    db.session.add(Member(name="李四", group="放射系统功能组", level="B"))
+    db.session.commit()
+
+    resp = client.get("/team/?group=放射图像研究组",
+                      headers={"X-Requested-With": "XMLHttpRequest"})
+    assert resp.status_code == 200
+    html = resp.data.decode()
+    assert "张三" in html
+    assert "李四" not in html

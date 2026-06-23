@@ -24,6 +24,12 @@ def list_members():
     if level:
         query = query.filter(Member.level == level)
     members = query.order_by(Member.group, Member.name).all()
+
+    # AJAX 请求：只返回成员列表片段
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return render_template("team/_member_grid.html", members=members,
+                               groups=GROUPS, levels=LEVELS, titles=TITLES)
+
     return render_template(
         "team/list.html", members=members,
         groups=GROUPS, levels=LEVELS, titles=TITLES,
