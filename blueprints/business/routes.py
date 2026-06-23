@@ -7,7 +7,7 @@ from flask import (render_template, request, redirect, url_for, flash,
 from blueprints.business import business_bp
 from blueprints.business.process_template import STANDARD_PROCESS, STAGE_NAMES
 from extensions import db
-from models import TechPoint, StageProgress
+from models import TechPoint, StageProgress, Member
 
 DIRECTIONS = ["放射系统功能", "放射图像研究", "放射智能定量", "放射智能应用"]
 
@@ -61,7 +61,8 @@ def new_tech_point():
         db.session.commit()
         flash("技术点已创建", "success")
         return redirect(url_for("business.view_tech_point", id=tp.id))
-    return render_template("business/form.html", point=None, stages=STANDARD_PROCESS, directions=DIRECTIONS)
+    members = Member.query.order_by(Member.name).all()
+    return render_template("business/form.html", point=None, stages=STANDARD_PROCESS, directions=DIRECTIONS, members=members)
 
 
 @business_bp.route("/<int:id>")
@@ -79,9 +80,8 @@ def view_tech_point(id):
             .filter_by(tech_point_id=tp.id, stage=sdef["stage"])
             .order_by(StageProgress.id).all()
         )
-        gate_passed = all(
-            sp.is_completed for sp in substeps if sp.sub_step in GATE_STEPS
-        )
+        gate_substeps = [sp for sp in substeps if sp.sub_step in GATE_STEPS]
+        gate_passed = bool(gate_substeps) and all(sp.is_completed for sp in gate_substeps)
         all_done = bool(substeps) and all(sp.is_completed for sp in substeps)
         stages_info.append({
             "stage": sdef["stage"],
@@ -115,7 +115,8 @@ def edit_tech_point(id):
         db.session.commit()
         flash("技术点已更新", "success")
         return redirect(url_for("business.view_tech_point", id=tp.id))
-    return render_template("business/form.html", point=tp, stages=STANDARD_PROCESS, directions=DIRECTIONS)
+    members = Member.query.order_by(Member.name).all()
+    return render_template("business/form.html", point=tp, stages=STANDARD_PROCESS, directions=DIRECTIONS, members=members)
 
 
 @business_bp.route("/stage/<int:sp_id>/toggle", methods=["POST"])
@@ -180,3 +181,26 @@ def delete_doc(doc_id):
     db.session.commit()
     flash("文件已移除", "success")
     return redirect(url_for("business.view_tech_point", id=tp_id))
+
+
+@business_bp.route("/<int:id>/delete", methods=["POST"])
+def delete_tech_point(id):
+    from models import StageDocument
+    tp = TechPoint.query.get_or_404(id)
+    confirm_name = request.form.get("confirm_name", "").strip()
+    if confirm_name != tp.name:
+        flash("输入的技术点名称不匹配，未删除", "danger")
+        return redirect(url_for("business.view_tech_point", id=tp.id))
+    upload_dir = current_app.config["UPLOAD_FOLDER"]
+    # 清理所有子步骤的文档（磁盘 + 数据库）
+    for sp in tp.stage_progresses:
+        for doc in sp.documents:
+            file_path = os.path.join(upload_dir, doc.file_path)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            db.session.delete(doc)
+        db.session.delete(sp)
+    db.session.delete(tp)
+    db.session.commit()
+    flash(f"技术点「{tp.name}」已删除", "success")
+    return redirect(url_for("business.list_tech_points"))

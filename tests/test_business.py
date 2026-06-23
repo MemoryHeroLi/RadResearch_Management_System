@@ -138,3 +138,95 @@ def test_delete_document(client, db, app):
     assert resp.status_code == 200
     assert StageDocument.query.count() == 0
     assert not os.path.exists(disk_path)
+
+
+def test_delete_tech_point(client, db, app):
+    """创建含子步骤和文档的技术点，输入正确名称后删除"""
+    from models import TechPoint, StageProgress, StageDocument
+    import os
+
+    tp = TechPoint(name="待删除项目", direction="放射图像研究")
+    db.session.add(tp)
+    db.session.commit()
+    sp = StageProgress(tech_point_id=tp.id, stage=1, sub_step="需求导入")
+    db.session.add(sp)
+    db.session.flush()
+
+    # 上传一个文档
+    data = {
+        "file": (io.BytesIO(b"tp attachment"), "tp_doc.pdf"),
+        "doc_type": "测试",
+    }
+    resp = client.post(
+        f"/business/stage/{sp.id}/upload", data=data,
+        content_type="multipart/form-data", follow_redirects=True,
+    )
+    assert resp.status_code == 200
+    doc = StageDocument.query.first()
+    assert doc is not None
+    upload_dir = app.config["UPLOAD_FOLDER"]
+    disk_path = os.path.join(upload_dir, doc.file_path)
+    assert os.path.exists(disk_path)
+
+    # 输入正确名称删除
+    resp = client.post(f"/business/{tp.id}/delete", data={
+        "confirm_name": "待删除项目",
+    }, follow_redirects=True)
+    assert resp.status_code == 200
+    assert TechPoint.query.count() == 0
+    assert StageProgress.query.filter_by(tech_point_id=tp.id).count() == 0
+    assert StageDocument.query.count() == 0
+    assert not os.path.exists(disk_path)
+
+
+def test_delete_tech_point_rejects_wrong_name(client, db):
+    """输入错误名称时拒绝删除"""
+    from models import TechPoint
+    tp = TechPoint(name="保留项目", direction="放射图像研究")
+    db.session.add(tp)
+    db.session.commit()
+
+    resp = client.post(f"/business/{tp.id}/delete", data={
+        "confirm_name": "错误名称",
+    }, follow_redirects=True)
+    assert resp.status_code == 200
+    assert TechPoint.query.filter_by(name="保留项目").first() is not None
+
+
+def test_new_tech_point_form_has_member_select(client, db):
+    """新建技术点表单的负责人字段应显示 Member 表中的成员"""
+    from models import Member
+    db.session.add(Member(name="张三", group="放射图像研究组"))
+    db.session.add(Member(name="李四", group="放射系统功能组"))
+    db.session.commit()
+
+    resp = client.get("/business/new")
+    assert resp.status_code == 200
+    html = resp.data.decode()
+    # 应包含 <select name="owner">
+    assert 'name="owner"' in html
+    assert '<select' in html
+    # 应包含两位成员
+    assert "张三" in html
+    assert "李四" in html
+    # 不应是 input
+    assert '<input type="text" name="owner"' not in html
+
+
+def test_edit_tech_point_form_has_member_select(client, db):
+    """编辑技术点表单的负责人字段应显示已选中的负责人"""
+    from models import TechPoint, Member
+    db.session.add(Member(name="王五", group="放射智能定量组"))
+    db.session.commit()
+    tp = TechPoint(name="测试技术点", direction="放射图像研究", owner="王五")
+    db.session.add(tp)
+    db.session.commit()
+
+    resp = client.get(f"/business/{tp.id}/edit")
+    assert resp.status_code == 200
+    html = resp.data.decode()
+    # 应包含 select + 选中王五
+    assert 'name="owner"' in html
+    assert "王五" in html
+    # 不应是 input
+    assert '<input type="text" name="owner"' not in html
