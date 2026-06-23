@@ -9,7 +9,7 @@
     <a href="{{ url_for('business.new_tech_point') }}" class="btn btn-primary">+ 新增技术点</a>
 </div>
 
-<form method="get" class="filter-bar">
+<form method="get" class="filter-bar" id="filter-form">
     <select name="stage" class="form-select">
         <option value="">全部阶段</option>
         {% for s in stages %}
@@ -23,9 +23,10 @@
         {% endfor %}
     </select>
     <input type="text" name="q" class="form-input" placeholder="搜索技术点..." value="{{ filters.q }}" style="min-width:180px;">
-    <button class="btn btn-outline btn-sm">筛选</button>
+    <button type="submit" class="btn btn-outline btn-sm" id="filter-btn">筛选</button>
 </form>
 
+<div id="tech-table-container">
 <table class="data-table">
     <thead>
         <tr>
@@ -49,11 +50,41 @@
             </td>
             <td>{{ p.owner or '-' }}</td>
             <td class="text-muted text-sm">{{ p.updated_at.strftime('%Y-%m-%d') if p.updated_at else '' }}</td>
-            <td><a href="{{ url_for('business.edit_tech_point', id=p.id) }}" class="btn btn-outline btn-sm">编辑</a></td>
+            <td>
+                <a href="{{ url_for('business.edit_tech_point', id=p.id) }}" class="btn btn-outline btn-sm">编辑</a>
+            </td>
         </tr>
         {% else %}
         <tr class="empty-row"><td colspan="7">暂无技术点，点击右上角新增</td></tr>
         {% endfor %}
     </tbody>
 </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    var stageSelect = document.querySelector('#filter-form select[name="stage"]');
+    var statusSelect = document.querySelector('#filter-form select[name="status"]');
+    var container = document.getElementById('tech-table-container');
+
+    function doFilter() {
+        var params = new URLSearchParams();
+        if (stageSelect.value) params.set('stage', stageSelect.value);
+        if (statusSelect.value) params.set('status', statusSelect.value);
+
+        fetch('/business/?' + params.toString(), {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(function(r) { return r.text(); })
+        .then(function(html) {
+            container.innerHTML = html;
+        });
+    }
+
+    stageSelect.addEventListener('change', doFilter);
+    statusSelect.addEventListener('change', doFilter);
+})();
+</script>
 {% endblock %}

@@ -26,6 +26,12 @@ def list_tech_points():
     if q:
         query = query.filter(TechPoint.name.contains(q))
     points = query.order_by(TechPoint.updated_at.desc()).all()
+
+    # AJAX 请求：只返回列表片段
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return render_template("business/_tech_table.html", points=points,
+                               stages=STANDARD_PROCESS, stage_names=STAGE_NAMES)
+
     return render_template(
         "business/list.html",
         points=points,

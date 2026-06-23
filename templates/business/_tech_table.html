@@ -1,0 +1,32 @@
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>技术点名称</th>
+            <th>技术方向</th>
+            <th>当前阶段</th>
+            <th>状态</th>
+            <th>负责人</th>
+            <th>更新时间</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in points %}
+        <tr>
+            <td><a href="{{ url_for('business.view_tech_point', id=p.id) }}">{{ p.name }}</a></td>
+            <td><span class="badge badge-info">{{ p.direction }}</span></td>
+            <td><span class="badge badge-warning">阶段{{ p.current_stage }}</span></td>
+            <td>
+                <span class="badge {{ 'badge-success' if p.status == '已完成' else 'badge-warning' if p.status == '进行中' else 'badge-secondary' }}">{{ p.status }}</span>
+            </td>
+            <td>{{ p.owner or '-' }}</td>
+            <td class="text-muted text-sm">{{ p.updated_at.strftime('%Y-%m-%d') if p.updated_at else '' }}</td>
+            <td>
+                <a href="{{ url_for('business.edit_tech_point', id=p.id) }}" class="btn btn-outline btn-sm">编辑</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr class="empty-row"><td colspan="7">暂无技术点，点击右上角新增</td></tr>
+        {% endfor %}
+    </tbody>
+</table>

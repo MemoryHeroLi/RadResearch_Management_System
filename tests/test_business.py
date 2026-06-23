@@ -327,3 +327,39 @@ def test_list_members_ajax_filter(client, db):
     html = resp.data.decode()
     assert "张三" in html
     assert "李四" not in html
+
+
+def test_list_tech_points_ajax_returns_fragment(client, db):
+    """业务管理 AJAX 请求应只返回列表片段，不含完整页面结构"""
+    from models import TechPoint
+    db.session.add(TechPoint(name="测试A", direction="放射图像研究", current_stage=1, status="进行中"))
+    db.session.add(TechPoint(name="测试B", direction="放射智能定量", current_stage=3, status="进行中"))
+    db.session.commit()
+
+    # 普通请求应返回完整页面
+    resp = client.get("/business/")
+    assert resp.status_code == 200
+    html = resp.data.decode()
+    assert "业务管理" in html
+
+    # AJAX 请求应只返回列表片段
+    resp_ajax = client.get("/business/", headers={"X-Requested-With": "XMLHttpRequest"})
+    assert resp_ajax.status_code == 200
+    html_ajax = resp_ajax.data.decode()
+    assert "业务管理" not in html_ajax
+    assert ("data-table" in html_ajax) or ("empty-state" in html_ajax)
+
+
+def test_list_tech_points_ajax_filter(client, db):
+    """业务管理 AJAX 筛选应返回正确的筛选结果"""
+    from models import TechPoint
+    db.session.add(TechPoint(name="测试A", direction="放射图像研究", current_stage=1, status="进行中"))
+    db.session.add(TechPoint(name="测试B", direction="放射智能定量", current_stage=3, status="进行中"))
+    db.session.commit()
+
+    resp = client.get("/business/?stage=3",
+                      headers={"X-Requested-With": "XMLHttpRequest"})
+    assert resp.status_code == 200
+    html = resp.data.decode()
+    assert "测试B" in html
+    assert "测试A" not in html
