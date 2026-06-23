@@ -14,7 +14,7 @@
     <a href="{{ url_for('process.list_policies') }}">制度文档</a>
 </div>
 
-<form method="get" class="filter-bar">
+<form method="get" class="filter-bar" id="filter-form">
     <select name="category" class="form-select">
         <option value="">全部分类</option>
         {% for c in categories %}<option value="{{ c }}" {% if filters.category == c %}selected{% endif %}>{{ c }}</option>{% endfor %}
@@ -23,9 +23,10 @@
         <option value="">全部状态</option>
         {% for s in statuses %}<option value="{{ s }}" {% if filters.status == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
     </select>
-    <button class="btn btn-outline btn-sm">筛选</button>
+    <button type="submit" class="btn btn-outline btn-sm" id="filter-btn">筛选</button>
 </form>
 
+<div id="issue-table-container">
 {% if issues %}
 <table class="data-table">
     <thead>
@@ -57,4 +58,32 @@
     <div class="empty-text">暂无问题记录</div>
 </div>
 {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    var categorySelect = document.querySelector('#filter-form select[name="category"]');
+    var statusSelect = document.querySelector('#filter-form select[name="status"]');
+    var container = document.getElementById('issue-table-container');
+
+    function doFilter() {
+        var params = new URLSearchParams();
+        if (categorySelect.value) params.set('category', categorySelect.value);
+        if (statusSelect.value) params.set('status', statusSelect.value);
+
+        fetch('/process/issues?' + params.toString(), {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(function(r) { return r.text(); })
+        .then(function(html) {
+            container.innerHTML = html;
+        });
+    }
+
+    categorySelect.addEventListener('change', doFilter);
+    statusSelect.addEventListener('change', doFilter);
+})();
+</script>
 {% endblock %}

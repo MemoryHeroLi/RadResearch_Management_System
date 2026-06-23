@@ -23,6 +23,11 @@ def list_issues():
     if status:
         query = query.filter(Issue.status == status)
     issues = query.order_by(Issue.created_at.desc()).all()
+
+    # AJAX 请求：只返回表格片段
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return render_template("process/_issue_table.html", issues=issues)
+
     return render_template(
         "process/issue_list.html", issues=issues,
         categories=ISSUE_CATEGORIES, statuses=ISSUE_STATUSES,

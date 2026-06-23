@@ -254,3 +254,40 @@ def test_member_card_has_data_attributes(client, db):
     assert 'data-member-group="放射图像研究组"' in html
     # 卡片应有点击处理
     assert "onclick=\"openMemberModal(this)\"" in html
+
+
+def test_list_issues_ajax_returns_table_fragment(client, db):
+    """AJAX 请求应只返回表格 HTML 片段，不含完整页面结构"""
+    from models import Issue
+    db.session.add(Issue(title="测试问题", category="流程问题", severity="高", status="待处理"))
+    db.session.add(Issue(title="已关闭问题", category="质量问题", severity="中", status="已关闭"))
+    db.session.commit()
+
+    # 不带 AJAX 头的普通请求应返回完整页面
+    resp = client.get("/process/issues")
+    assert resp.status_code == 200
+    html = resp.data.decode()
+    assert "流程制度" in html  # 页面标题
+
+    # 带 AJAX 头的请求应只返回表格片段
+    resp_ajax = client.get("/process/issues", headers={"X-Requested-With": "XMLHttpRequest"})
+    assert resp_ajax.status_code == 200
+    html_ajax = resp_ajax.data.decode()
+    # 片段不应包含完整页面结构
+    assert "流程制度" not in html_ajax  # 不应有页面标题
+    assert "<table" in html_ajax or "empty-state" in html_ajax  # 表格或空状态
+
+
+def test_list_issues_ajax_filter(client, db):
+    """AJAX 筛选应返回正确的筛选结果"""
+    from models import Issue
+    db.session.add(Issue(title="流程问题A", category="流程问题", severity="高", status="待处理"))
+    db.session.add(Issue(title="质量问题B", category="质量问题", severity="中", status="待处理"))
+    db.session.commit()
+
+    resp = client.get("/process/issues?category=流程问题",
+                      headers={"X-Requested-With": "XMLHttpRequest"})
+    assert resp.status_code == 200
+    html = resp.data.decode()
+    assert "流程问题A" in html
+    assert "质量问题B" not in html
