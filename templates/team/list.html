@@ -18,7 +18,7 @@
         <option value="">全部评级</option>
         {% for l in levels %}<option value="{{ l }}" {% if filters.level == l %}selected{% endif %}>{{ l }}级</option>{% endfor %}
     </select>
-    <button type="submit" class="btn btn-outline btn-sm" id="filter-btn">筛选</button>
+    <button type="submit" class="btn btn-outline btn-sm" id="filter-btn" style="display:none">筛选</button>
 </form>
 
 <div id="member-grid-container">
