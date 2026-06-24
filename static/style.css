@@ -687,6 +687,44 @@ code, .mono { font-family: 'Fira Code', 'Cascadia Code', monospace; font-size: .
   font-weight: 700; color: var(--color-primary);
 }
 
+/* ── Profile Modal (方案D) ── */
+.modal-profile { max-width: 420px; }
+.modal-profile .modal-close {
+  position: absolute; top: 12px; right: 16px; z-index: 1;
+}
+.profile-top {
+  text-align: center; padding: 28px 24px 16px;
+}
+.profile-avatar {
+  width: 68px; height: 68px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 28px; color: #fff;
+  font-family: var(--font-heading);
+  margin: 0 auto 10px;
+}
+.profile-name { font-size: 20px; font-weight: 700; margin: 0; }
+.profile-subtitle { font-size: 13px; color: var(--color-fg-muted); margin-top: 2px; }
+.profile-top .level-badge {
+  display: inline-block; margin-top: 8px; padding: 4px 16px;
+  border-radius: var(--radius-full); font-size: 13px; font-weight: 700;
+  background: var(--color-warning-light); color: #92400E;
+}
+.profile-divider { height: 1px; background: var(--color-border); margin: 0 24px; }
+.profile-info { padding: 12px 24px; }
+.pi-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 0; border-bottom: 1px solid var(--color-muted);
+  font-size: 14px;
+}
+.pi-label { color: var(--color-fg-muted); }
+.pi-value { font-weight: 600; color: var(--color-fg); }
+.radar-section { padding: 12px 24px 24px; }
+.radar-section-title {
+  font-size: 11px; color: var(--color-fg-muted); font-weight: 700;
+  text-transform: uppercase; letter-spacing: .5px; text-align: center;
+  margin-bottom: 8px;
+}
+
 /* ── Reduced Motion ── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

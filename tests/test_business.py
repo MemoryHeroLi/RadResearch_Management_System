@@ -248,6 +248,11 @@ def test_member_card_has_data_attributes(client, db):
     # 模态框结构应存在
     assert 'id="member-modal"' in html
     assert 'class="modal-overlay"' in html
+    # 方案D Profile 风格元素
+    assert 'id="modal-avatar"' in html
+    assert 'class="profile-top"' in html
+    assert 'class="level-badge"' in html
+    assert 'id="radarChart"' in html
     # 卡片应包含 data 属性
     assert 'data-member-name="张三"' in html
     assert 'data-member-employee-id="E001"' in html
