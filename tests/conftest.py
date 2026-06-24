@@ -4,27 +4,19 @@ import os
 
 @pytest.fixture()
 def app(tmp_path):
-    """内存数据库的测试 app，复用生产工厂但覆盖配置"""
+    """内存数据库的测试 app，复用生产工厂但通过环境变量切换为内存库"""
+    # 必须在 create_app() 之前设置，Config 会读取此环境变量
+    os.environ["DATABASE_URL"] = "sqlite:///:memory:"
+
     from start import create_app
 
     app = create_app()
     app.config["TESTING"] = True
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
     app.config["WTF_CSRF_ENABLED"] = False
     app.config["UPLOAD_FOLDER"] = str(tmp_path / "uploads")
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
-    # 重建表到内存库
-    from extensions import db as _db
-    with app.app_context():
-        _db.drop_all()
-        _db.create_all()
-
     yield app
-
-    with app.app_context():
-        _db.session.remove()
-        _db.drop_all()
 
 
 @pytest.fixture()
