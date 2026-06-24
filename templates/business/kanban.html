@@ -10,7 +10,13 @@
             <span class="text-muted text-sm">负责人: {{ point.owner or '-' }} · 当前阶段: {{ point.current_stage }}</span>
         </p>
     </div>
-    <a href="{{ url_for('business.edit_tech_point', id=point.id) }}" class="btn btn-outline btn-sm">编辑</a>
+    <div class="flex-center gap-2">
+        <a href="{{ url_for('business.edit_tech_point', id=point.id) }}" class="btn btn-outline btn-sm">编辑</a>
+        <form method="post" action="{{ url_for('business.delete_tech_point', id=point.id) }}" class="flex-center gap-2" onsubmit="return confirm('确认删除技术点「{{ point.name }}」？此操作不可撤销，将同时删除所有阶段进展与附件。')">
+            <input type="text" name="confirm_name" class="form-input" placeholder="输入「{{ point.name }}」确认" required style="font-size:12px;padding:4px 8px;max-width:220px;">
+            <button class="btn btn-sm" style="color:var(--color-destructive);border-color:var(--color-destructive);">删除</button>
+        </form>
+    </div>
 </div>
 
 <div class="kanban-board">

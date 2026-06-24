@@ -55,7 +55,14 @@
       "Bash(GIT_SSL_NO_VERIFY=1 git push origin main)",
       "Bash(rm -f rad_research.db)",
       "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -c \"from start import create_app; app = create_app\\(\\); print\\('App OK'\\); print\\('Blueprints:', [bp.name for bp in app.blueprints.values\\(\\)]\\); [print\\(f'  {rule.rule} -> {rule.endpoint}'\\) for rule in app.url_map.iter_rules\\(\\) if not rule.rule.startswith\\('/static'\\)]\")",
-      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -c \"from start import create_app; app = create_app\\(\\); print\\('App OK'\\); [print\\(f'  {r.rule} -> {r.endpoint}'\\) for r in app.url_map.iter_rules\\(\\) if not r.rule.startswith\\('/static'\\)]\")"
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -c \"from start import create_app; app = create_app\\(\\); print\\('App OK'\\); [print\\(f'  {r.rule} -> {r.endpoint}'\\) for r in app.url_map.iter_rules\\(\\) if not r.rule.startswith\\('/static'\\)]\")",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_business.py::test_new_tech_point_form_has_member_select tests/test_business.py::test_edit_tech_point_form_has_member_select -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_business.py::test_member_card_has_data_attributes -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_business.py::test_list_issues_ajax_returns_table_fragment tests/test_business.py::test_list_issues_ajax_filter -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_business.py::test_list_members_ajax_returns_fragment tests/test_business.py::test_list_members_ajax_filter -v)",
+      "Bash(\"D:\\\\ProgramData\\\\anaconda3\\\\envs\\\\app\\\\python.exe\" -m pytest tests/test_business.py::test_list_tech_points_ajax_returns_fragment tests/test_business.py::test_list_tech_points_ajax_filter -v)",
+      "Bash(start templates\\\\team\\\\_modal_options.html)",
+      "Bash(start \"\" \"e:\\\\Projects\\\\RadResearch_Management_System\\\\templates\\\\team\\\\_modal_options.html\")"
     ]
   }
 }
